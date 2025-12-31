@@ -5,9 +5,8 @@ node_modules/
 *.wasm
 target/
 
-# Tree-sitter generated files
-grammars/tree-sitter-applescript/src/
-grammars/tree-sitter-applescript/bindings/
+# Zed clones grammars here automatically
+grammars/
 
 # OS files
 .DS_Store
