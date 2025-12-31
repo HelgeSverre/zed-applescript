@@ -54,6 +54,9 @@ To test locally:
 3. Run "zed: install dev extension" from the command palette
 4. Select the cloned directory
 
+> [!TIP]
+> In the Finder dialog, press `Cmd+Shift+G` to open "Go to Folder" and paste a path directly.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE.md) file for details.
