@@ -1,0 +1,14 @@
+[
+  {
+    "label": "Run AppleScript",
+    "command": "osascript",
+    "args": ["$ZED_FILE"],
+    "tags": ["applescript-script"]
+  },
+  {
+    "label": "Run handler: $ZED_SYMBOL",
+    "command": "osascript",
+    "args": ["-e", "run script (POSIX file \"$ZED_FILE\") with parameters {}", "-e", "$ZED_SYMBOL()"],
+    "tags": ["applescript-handler"]
+  }
+]
