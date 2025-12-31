@@ -1,0 +1,7 @@
+name = "AppleScript"
+grammar = "applescript"
+path_suffixes = ["applescript", "scpt"]
+line_comments = ["-- ", "# "]
+block_comment = ["(*", "*)"]
+tab_size = 4
+hard_tabs = true

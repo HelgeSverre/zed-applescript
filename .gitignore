@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+*.wasm
+target/
+
+# Tree-sitter generated files
+grammars/tree-sitter-applescript/src/
+grammars/tree-sitter-applescript/bindings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Logs
+*.log
