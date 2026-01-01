@@ -1,4 +1,7 @@
 # Generate tree-sitter parser
+help:
+    just --list
+
 build:
     cd grammars/applescript && npm install && npx tree-sitter generate
 
