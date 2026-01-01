@@ -20,3 +20,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Old tree-sitter repo (reference only)
+tree-sitter-applescript-old/

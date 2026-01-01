@@ -1,5 +1,11 @@
 ; Outline/symbol support for AppleScript
-; Shows handler definitions in the symbol outline panel
+; Shows handlers and scripts in the symbol outline panel
 
 (handler_definition
+  name: (identifier) @name) @item
+
+(script_block
+  name: (identifier) @name) @item
+
+(property_declaration
   name: (identifier) @name) @item
