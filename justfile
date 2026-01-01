@@ -4,13 +4,21 @@ default:
 
 # Build/generate the tree-sitter parser
 build:
-    cd grammars/applescript && npm install && npx tree-sitter generate
+    cd grammars/applescript && npm install --ignore-scripts && npx tree-sitter generate
 
 # Test the grammar parses correctly
 test:
-    @echo "Testing grammar..."
-    @echo 'on sayHello(name)\n    return "Hello"\nend sayHello' | npx tree-sitter parse --stdin -q grammars/applescript || true
-    cd grammars/applescript && npx tree-sitter parse /dev/stdin <<< 'set x to 5'
+    #!/usr/bin/env bash
+    set -e
+    echo "Testing grammar..."
+    cd grammars/applescript
+    echo 'set x to 5' | npx tree-sitter parse /dev/stdin
+    echo ""
+    echo 'on sayHello(name)
+        return "Hello"
+    end sayHello' | npx tree-sitter parse /dev/stdin
+    echo ""
+    echo "✓ All tests passed"
 
 # Install dev extension in Zed
 install:
