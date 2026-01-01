@@ -1,3 +1,7 @@
+# Show available commands
+default:
+    @just --list
+
 # Build/generate the tree-sitter parser
 build:
     cd grammars/applescript && npm install && npx tree-sitter generate
