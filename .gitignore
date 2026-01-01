@@ -4,6 +4,8 @@ node_modules/
 # Build outputs
 *.wasm
 target/
+build/
+grammars/*/build/
 
 # OS files
 .DS_Store
