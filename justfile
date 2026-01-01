@@ -2,16 +2,20 @@
 default:
     @just --list
 
+# Initialize/update the grammar submodule
+init:
+    git submodule update --init --recursive
+
 # Build/generate the tree-sitter parser
 build:
-    cd grammars/applescript && npm install --ignore-scripts && npx tree-sitter generate
+    cd grammars/tree-sitter-applescript && npm install --ignore-scripts && npx tree-sitter generate
 
 # Test the grammar parses correctly
 test:
     #!/usr/bin/env bash
     set -e
     echo "Testing grammar..."
-    cd grammars/applescript
+    cd grammars/tree-sitter-applescript
     echo 'set x to 5' | npx tree-sitter parse /dev/stdin
     echo ""
     echo 'on sayHello(name)
@@ -27,12 +31,18 @@ install:
     @echo "2. Cmd+Shift+P → 'zed: install dev extension'"
     @echo "3. Select this directory: $(pwd)"
 
-# Update grammar commit SHA in extension.toml (run after pushing)
-update-commit:
+# Update submodule to latest and update extension.toml
+update-grammar:
     #!/usr/bin/env bash
+    set -e
+    cd grammars/tree-sitter-applescript
+    git fetch origin
+    git checkout origin/main
     COMMIT=$(git rev-parse HEAD)
+    cd ../..
     sed -i '' "s/^commit = \".*\"/commit = \"$COMMIT\"/" extension.toml
-    echo "Updated extension.toml to commit $COMMIT"
+    echo "Updated extension.toml to grammar commit $COMMIT"
+    git add grammars/tree-sitter-applescript extension.toml
 
 # Bump version and prepare release
 release version:
@@ -42,22 +52,12 @@ release version:
     # Update version in extension.toml
     sed -i '' "s/^version = \".*\"/version = \"{{version}}\"/" extension.toml
     
-    # Build grammar to make sure it works
-    just build
+    # Ensure submodule is up to date
+    just update-grammar
     
-    # Get current commit (before we commit version bump)
+    # Commit
     git add -A
     git commit -m "Release v{{version}}"
-    
-    # Now update the commit SHA to point to THIS commit
-    COMMIT=$(git rev-parse HEAD)
-    sed -i '' "s/^commit = \".*\"/commit = \"$COMMIT\"/" extension.toml
-    git add extension.toml
-    git commit --amend --no-edit
-    
-    # Get the final commit SHA
-    FINAL_COMMIT=$(git rev-parse HEAD)
-    echo "Final commit: $FINAL_COMMIT"
     
     # Tag it
     git tag -a "v{{version}}" -m "Release v{{version}}"

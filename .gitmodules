@@ -1,0 +1,3 @@
+[submodule "grammars/tree-sitter-applescript"]
+	path = grammars/tree-sitter-applescript
+	url = https://github.com/HelgeSverre/tree-sitter-applescript.git
