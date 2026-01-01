@@ -6,9 +6,9 @@
     "tags": ["applescript-script"]
   },
   {
-    "label": "Run handler: $ZED_SYMBOL",
+    "label": "Run handler",
     "command": "osascript",
-    "args": ["-e", "run script (POSIX file \"$ZED_FILE\") with parameters {}", "-e", "$ZED_SYMBOL()"],
+    "args": ["$ZED_FILE"],
     "tags": ["applescript-handler"]
   }
 ]

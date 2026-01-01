@@ -13,6 +13,7 @@
 (considering_block) @indent
 (ignoring_block) @indent
 (timeout_block) @indent
+(using_terms_block) @indent
 
 ; Dedent on block end keywords
 (keyword_end) @outdent

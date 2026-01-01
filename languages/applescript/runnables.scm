@@ -1,6 +1,8 @@
-; Tag handler definitions as runnable
-(handler_definition
-  name: (identifier) @run) @applescript-handler
+; Run entire AppleScript file
+; @run marks where the play button appears in the gutter
+(source_file) @run @applescript-script
 
-; Tag the entire source file as runnable (run whole script)
-(source_file) @applescript-script
+; Optionally run individual handlers
+; Handler name is captured for the task label
+(handler_definition
+  name: (identifier) @_name) @run @applescript-handler
