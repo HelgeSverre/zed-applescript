@@ -5,9 +5,6 @@ node_modules/
 *.wasm
 target/
 
-# Zed clones grammars here automatically
-grammars/
-
 # OS files
 .DS_Store
 Thumbs.db
