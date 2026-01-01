@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install tree-sitter CLI
+        run: npm install -g tree-sitter-cli
+
+      - name: Generate and validate grammar
+        working-directory: grammars/applescript
+        run: |
+          npm install
+          tree-sitter generate
+
+      - name: Test grammar parsing
+        working-directory: grammars/applescript
+        run: |
+          echo 'on sayHello(name)
+              return "Hello, " & name
+          end sayHello
+
+          tell application "Finder"
+              set x to 5
+          end tell' > /tmp/test.applescript
+          
+          tree-sitter parse /tmp/test.applescript
+
+      - name: Validate extension.toml
+        run: |
+          if ! grep -q "^\[grammars\.applescript\]" extension.toml; then
+            echo "Missing grammar definition in extension.toml"
+            exit 1
+          fi
+          echo "extension.toml is valid"
