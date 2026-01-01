@@ -9,4 +9,4 @@ repository = "https://github.com/HelgeSverre/zed-applescript"
 [grammars.applescript]
 repository = "https://github.com/HelgeSverre/zed-applescript"
 path = "grammars/applescript"
-commit = "0c62c2d6ba25c77ba5da8ccb1cb0bde7000881b9"
+commit = "19fe0f5417265202b34f67471e4be0284e0d942a"
