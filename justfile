@@ -8,7 +8,7 @@ init:
 
 # Build/generate the tree-sitter parser
 build:
-    cd grammars/tree-sitter-applescript && npm install --ignore-scripts && npx tree-sitter generate
+    cd grammars/tree-sitter-applescript && npm install && npm run generate
 
 # Test the grammar parses correctly
 test:
