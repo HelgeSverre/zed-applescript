@@ -181,5 +181,9 @@
 ; token inside whose_clause; highlight the rule as control-flow.
 (whose_clause) @keyword.control
 
+; Pipe-delimited identifiers — `|name with spaces|`. Same color as plain
+; identifiers; the bars are part of the token.
+(piped_identifier) @variable
+
 ; General identifiers (fallback)
 (identifier) @variable
