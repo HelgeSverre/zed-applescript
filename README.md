@@ -98,9 +98,9 @@ There is no maintained AppleScript language server, so none of these features ar
 
 The grammar is exercised against a corpus of real AppleScript files under [`grammars/tree-sitter-applescript/test/corpus/realworld/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld) — 36 scripts drawn from Apple's `/Library/Scripts/`, decompiled `.scpt` Folder Actions and Printing Scripts, plus hand-crafted ASObjC and edge-case samples. A categorized gap analysis lives in [`ERRORS.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/ERRORS.md) for anyone extending the grammar.
 
-**Current state:** **34 of 34 active corpus files parse with zero `ERROR` and zero `MISSING` nodes.** Total reduction from baseline: **732 → 0 ERRORs across the active corpus**.
+**Current state:** **35 of 35 active corpus files parse with zero `ERROR` and zero `MISSING` nodes.** Total reduction from baseline: **732 → 0 ERRORs across the active corpus**.
 
-Two files exhibit known parser limitations and are quarantined under [`test/corpus/realworld/known-limits/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld/known-limits) with a per-file explanation in [`known-limits/README.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/known-limits/README.md). They stay in the repo as regression targets for the future scanner-architecture work that would un-block them — they are not deleted, just excluded from the green-build measurement until the underlying grammar can handle their specific edge cases.
+One file exhibits a known parser limitation and is quarantined under [`test/corpus/realworld/known-limits/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld/known-limits) with a per-file explanation in [`known-limits/README.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/known-limits/README.md). It stays in the repo as a regression target for the future scanner-architecture work that would un-block it — not deleted, just excluded from the green-build measurement until the grammar can handle its specific edge case.
 
 ### External scanner
 
@@ -109,15 +109,16 @@ Two files exhibit known parser limitations and are quarantined under [`test/corp
 - **`block_comment`** — `(* ... *)` that respects strings and nests. The regex-based comment closed at the first `*)` even when it was inside a `"..."` string; the scanner tracks quote state and depth.
 - **`alias_prefix`** — emits `alias` only when the next non-whitespace input isn't `of`. This separates `alias <expr>` (a value-creating prefix, used by `copy alias "X" to y`) from `alias of theItem` (still a plain property reference).
 
-### Why the two files are quarantined
+### Why the remaining file is quarantined
 
-Each documents a distinct precedence or context-sensitivity limit. Summarised in `known-limits/README.md`:
+`remove_folder_actions.applescript` has 3 ERROR nodes from rule-level cross-newline `compound_name` extension. After `tell app "Sys" to ¬\n  delete folder action X` followed by `end if` on the next line, the parser's rule-level `extras` skip the newline before the next `compound_name` continuation — so `end repeat` / `end if` tokens get pulled into a multi-line `compound_name`. The fix needs a row-tracking external token inside `compound_name`'s rule continuation, not just inside multi-word tokens.
 
-- **Outer `if_block` terminator** (`attach_folder_action`, `remove_folder_actions`) — `end if` where the `if` could be the optional handler-name or a fresh `keyword_if`; tree-sitter's GLR picks the wrong one.
+Previously unblocked files:
+- `colorsync_extract.applescript` — column-aware `keyword_handler_to` scanner token (v1.4.0).
+- `comment_tags.applescript` — multi-word tokens bounded to a single physical line (v1.5.0).
+- `attach_folder_action.applescript` — `inline_marker` external token for nested `if … then return … / end if` (v1.6.0).
 
-Note: `colorsync_extract.applescript` was unblocked in v1.4.0 by the column-aware `keyword_handler_to` scanner token. `comment_tags.applescript` was unblocked in v1.5.0 when multi-word tokens were bounded to a single physical line. Both are now in the active corpus.
-
-The remaining two issues need further column-/position-aware external scanner work — documented in [`docs/references/external-scanner/02-lessons-learned.md`](docs/references/external-scanner/02-lessons-learned.md).
+The remaining work is documented in [`docs/references/external-scanner/02-lessons-learned.md`](docs/references/external-scanner/02-lessons-learned.md).
 
 ## Known limitations
 
@@ -143,7 +144,7 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 
 ## Roadmap
 
-**Status: maintenance mode as of v1.5.0.** All editor surfaces are wired, the active 34-file real-world corpus parses with 0 ERROR + 0 MISSING, and the remaining items below all require further column-aware external scanner work. AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
+**Status: maintenance mode as of v1.6.0.** All editor surfaces are wired, the active 35-file real-world corpus parses with 0 ERROR + 0 MISSING, and only one file remains in `known-limits/` (documented inline). AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
 
 ### Done
 
@@ -157,10 +158,11 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 - **v1.3.0 addition**: pipe-delimited identifiers (`|name with spaces|`) — external scanner token, accepted everywhere an identifier slot exists.
 - **v1.4.0 addition**: context-sensitive `to` — column-aware external token; `move X to Y` and `from N to M` no longer mis-parse as handler headers. Unblocked `colorsync_extract.applescript` (now in the active corpus).
 - **v1.5.0 addition**: multi-word grammar tokens (`default answer`, `with multiple selections allowed`, etc.) are now bounded to a single physical line — eliminates an entire class of cross-line gluing bugs. Unblocked `comment_tags.applescript` (now in the active corpus); `known-limits/` is down to 2 files.
+- **v1.6.0 addition**: `inline_marker` external token for `if_simple_statement` — disambiguates nested `if … then return … / end if / end if` and lets the tail accept any `_item` (so `if cond then ¬\n  tell app to do X` and `if cond then say "yes"` parse correctly). Unblocked `attach_folder_action.applescript`; `known-limits/` is down to **one** file.
 
 ### Deferred — needs external-scanner work, not LLM-driven
 
-This shares the column-aware-scanner primitive already introduced in v1.4.0; landing further work here would unlock the remaining two files in `test/corpus/realworld/known-limits/` and (if anyone still cares) AppleScript Studio support.
+The remaining file in `known-limits/` (`remove_folder_actions.applescript`) needs a row-tracking external token inside `compound_name`'s rule continuation (not just inside multi-word tokens — that part was fixed in v1.5.0). Landing this would unlock the file and (if anyone still cares) AppleScript Studio support.
 
 ### Out of scope
 
@@ -169,7 +171,6 @@ This shares the column-aware-scanner primitive already introduced in v1.4.0; lan
 - **AppleScript Studio** — deprecated by Apple in 2011, removed from Xcode; no realistic user base.
 - **`.scptd` script bundles** — macOS packages, not files; Zed opens them as folders.
 - **JavaScript for Automation (JXA) as its own language** — would need a separate grammar.
-- **`if cond then <command_call>` one-liner** — known parser gap; supported one-line tails are `return`, `exit`, `continue`, `error`, `log`. Use the block form (`if cond then\n  command\nend if`) for command calls.
 
 [`docs/references/`](docs/references/) caches all the authoritative source material (Apple Language Guide, tree-sitter authoring docs, Zed extension docs, external-scanner reference, [`docs/references/external-scanner/01-scanner-c.md`](docs/references/external-scanner/01-scanner-c.md) for the C-side TSLexer interface) so any future contributor can extend the grammar without round-tripping through the web.
 

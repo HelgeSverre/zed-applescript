@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0]
+
+### Fixed
+
+- **Nested `if … then return … / end if / end if` now parses correctly.** A zero-width `inline_marker` external token is required between `then` and the one-liner tail in `if_simple_statement`; the scanner only emits it when the next non-extras character is on the SAME logical line as `then` (either same physical row, or reached through one or more `¬` line-continuation glyphs). A bare newline rejects the marker, forcing the multi-line `if_block` form to be the only viable path. This was the long-standing bug that `prec.dynamic` on `if_block` couldn't recover from — GLR was committing to `if_simple_statement` before reaching the disambiguating `end if`.
+- **Tail of `if_simple_statement` widened to any `_item`.** Since the inline_marker constraint guarantees no multi-line if-block body can be misread as a one-liner tail, the tail no longer needs to be one of 5 atomic statements (return/exit/continue/error/log). Idioms like `if cond then ¬\n  tell app to do X` and `if cond then say "yes"` now parse correctly.
+- Bonus: `attach_folder_action.applescript` now parses cleanly — was the cascade source for the third quarantined file. Moved to `folder_actions/`. Active corpus is **35/35** with 0 ERROR + 0 MISSING. Only **one** file remains in `known-limits/` (`remove_folder_actions.applescript` — hits rule-level cross-newline `compound_name` extension, documented inline).
+
+### Changed
+
+- Grammar pin bumped to `34a26d0`.
+- `known-limits/README.md`: one file remaining (was 2); `attach_folder_action.applescript` listed under "Resolved".
+
+### Not fixed in this release
+
+- `remove_folder_actions.applescript` still has 3 ERROR nodes. The root cause is rule-level cross-newline `compound_name` extension: after `tell app "Sys" to ¬\n  delete folder action X` followed by `end if` on the next line, the parser's rule-level `extras` skip the newline before the next `compound_name` continuation, so `end repeat` / `end if` tokens get pulled into a multi-line `compound_name`. The fix needs a row-tracking external token inside `compound_name`'s rule continuation, not just inside multi-word tokens.
+
 ## [1.5.0]
 
 ### Fixed
