@@ -122,19 +122,43 @@
 ; tell_simple_statement target is always a `reference (keyword_application string)`,
 ; which is already highlighted via the @keyword / @string rules above.
 
-; Property references
+; Property references — highlight the leading name part(s)
 (property_reference
-  (identifier) @property)
+  (compound_name) @property)
 
-; Possessive accessor: x's y — highlight the trailing identifier as a property
+; Possessive accessor: x's y — highlight the trailing name as a property
 (possessive_expression
   (possessive) @punctuation.delimiter
-  (identifier) @property)
+  (compound_name) @property)
 
 ; ObjC bridge method call: receiver's selector:arg [label:arg ...]
 (objc_selector_call
   (possessive) @punctuation.delimiter
   (identifier) @function.method)
+
+; Direct handler call: `userPicksFolder()`, `f(x, y, z)`
+(handler_call
+  (identifier) @function)
+
+; Raw data literal: «class fold», «data utxt201C»
+(raw_data) @constant.builtin
+
+; my <expr> — script self-reference
+(keyword_my) @keyword
+
+; ObjC-style handler definition: highlight selector words as function name
+(objc_handler_definition
+  (identifier) @function)
+
+; Folder Action multi-word event names
+(folder_action_event) @function
+
+; current_date and the_keyword
+(current_date) @constant.builtin
+(the_keyword) @keyword
+
+; implicit `end run` at top level
+(implicit_run_end) @keyword.control
 
 ; `a reference to <expr>` keyword prefix is a single multi-word token; highlight
 ; the wrapped expression node itself.

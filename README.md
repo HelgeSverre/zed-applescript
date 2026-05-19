@@ -62,7 +62,14 @@ Provided by the [tree-sitter-applescript](https://github.com/HelgeSverre/tree-si
 | Operators — comparison (`begins/ends/starts with`, `contains`, `is in`, …), logical, arithmetic, unary, range, concatenation | ✅ |
 | Text attributes — `case`, `diacriticals`, etc. (inside `considering` / `ignoring`) | ✅ |
 | `log`, `return`, `error`, `exit`, `continue` statements | ✅ |
-| Multi-word application-dictionary identifiers (`current view`, `container window`, `name extension`, …) | ⚠️ Parsed as separate identifiers. Tree-sitter has no access to applications' `.sdef` files. |
+| Decorative `the` (`set the x to the name of the file`) | ✅ |
+| `current date` / `current application` builtins | ✅ |
+| Implicit `on run` script (top-level `end run` matches) | ✅ |
+| `my <handler>(…)` self-reference and handler calls | ✅ |
+| Multi-word application-dictionary identifiers (`current view`, `name extension`, `text item delimiters`, `application file`, `static text`, …) | ✅ Handled via `compound_name` (1–3 word names) and a small built-in vocabulary of multi-word `element_type`s. Tree-sitter has no `.sdef` access, so an unknown 4+ word app constant may still split into separate identifiers in highlighting. |
+| ObjC-style handler definitions (`on selector:arg [label:arg …] … end selector:label:`) | ✅ |
+| Folder Action handler shapes (`on adding folder items to fld after receiving items`, `on opening folder`, etc.) | ✅ |
+| AppleScript raw-data literals (`«class fold»`, `«data utxt201C»`) | ✅ |
 
 ### Code intelligence (LSP-backed)
 
