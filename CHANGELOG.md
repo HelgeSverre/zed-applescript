@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0]
+
+### Added
+
+- **Context-sensitive `to` (column-aware external token)**: `keyword_handler_to` now only fires at column 0, so `move X to Y` and `from N to M` mid-statement no longer get mis-parsed as handler headers. First use of `lexer->get_column` in the scanner; lays the groundwork for further column-aware tokens in Phase 3.
+
+### Fixed
+
+- `test/corpus/realworld/object_specifiers/colorsync_extract.applescript` now parses cleanly (was previously quarantined in `known-limits/` due to this exact `to` ambiguity). Active corpus is 33/33 with zero ERROR + zero MISSING.
+
+### Changed
+
+- Grammar pin bumped to `1d6f1af` (column-aware `keyword_handler_to`).
+- `known-limits/README.md` updated: 3 files remaining (was 4); colorsync_extract listed under a new "Resolved" section.
+
 ## [1.3.0]
 
 ### Added

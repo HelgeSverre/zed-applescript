@@ -98,9 +98,9 @@ There is no maintained AppleScript language server, so none of these features ar
 
 The grammar is exercised against a corpus of real AppleScript files under [`grammars/tree-sitter-applescript/test/corpus/realworld/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld) — 36 scripts drawn from Apple's `/Library/Scripts/`, decompiled `.scpt` Folder Actions and Printing Scripts, plus hand-crafted ASObjC and edge-case samples. A categorized gap analysis lives in [`ERRORS.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/ERRORS.md) for anyone extending the grammar.
 
-**Current state:** **32 of 32 active corpus files parse with zero `ERROR` and zero `MISSING` nodes.** Total reduction from baseline: **732 → 0 ERRORs across the active corpus**.
+**Current state:** **33 of 33 active corpus files parse with zero `ERROR` and zero `MISSING` nodes.** Total reduction from baseline: **732 → 0 ERRORs across the active corpus**.
 
-Four files exhibit known parser limitations and are quarantined under [`test/corpus/realworld/known-limits/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld/known-limits) with a per-file explanation in [`known-limits/README.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/known-limits/README.md). They stay in the repo as regression targets for the future scanner-architecture work that would un-block them — they are not deleted, just excluded from the green-build measurement until the underlying grammar can handle their specific edge cases.
+Three files exhibit known parser limitations and are quarantined under [`test/corpus/realworld/known-limits/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld/known-limits) with a per-file explanation in [`known-limits/README.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/known-limits/README.md). They stay in the repo as regression targets for the future scanner-architecture work that would un-block them — they are not deleted, just excluded from the green-build measurement until the underlying grammar can handle their specific edge cases.
 
 ### External scanner
 
@@ -109,15 +109,16 @@ Four files exhibit known parser limitations and are quarantined under [`test/cor
 - **`block_comment`** — `(* ... *)` that respects strings and nests. The regex-based comment closed at the first `*)` even when it was inside a `"..."` string; the scanner tracks quote state and depth.
 - **`alias_prefix`** — emits `alias` only when the next non-whitespace input isn't `of`. This separates `alias <expr>` (a value-creating prefix, used by `copy alias "X" to y`) from `alias of theItem` (still a plain property reference).
 
-### Why the four files are quarantined
+### Why the three files are quarantined
 
 Each documents a distinct precedence or context-sensitivity limit. Summarised in `known-limits/README.md`:
 
 - **Outer `if_block` terminator** (`attach_folder_action`, `remove_folder_actions`) — `end if` where the `if` could be the optional handler-name or a fresh `keyword_if`; tree-sitter's GLR picks the wrong one.
-- **`to <ident>` ambiguity** (`colorsync_extract`, `remove_folder_actions`) — `move X to trash` inside `tell`/`try` is GLR-ambiguous with `to handlerName()` (handler-def start).
 - **Block-comment cascade tail** (`comment_tags`) — the scanner fixes the original ` "*)"` problem, but a follow-on cascade in a different part of the file remains.
 
-These need a column-/position-aware external scanner — a multi-day design project documented in [`docs/references/external-scanner/02-lessons-learned.md`](docs/references/external-scanner/02-lessons-learned.md), not a single grammar tweak. Three approaches were tried this session (`compound_word` external token with various filters, `compound_name` size reduction, parameter-name vocabulary expansion); all regressed the parser. The lessons file lays out why each approach failed.
+Note: `colorsync_extract.applescript` was previously quarantined for the `to <ident>` ambiguity; it was unblocked in v1.4.0 by the column-aware `keyword_handler_to` scanner token and is now in the active corpus.
+
+The remaining two issues need further column-/position-aware external scanner work — documented in [`docs/references/external-scanner/02-lessons-learned.md`](docs/references/external-scanner/02-lessons-learned.md).
 
 ## Known limitations
 
@@ -131,9 +132,8 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 
 ### Needs an external C scanner (substantial)
 
-- **Pipe-delimited identifiers** (`|My Identifier|`) — AppleScript's escape syntax for identifiers with spaces or reserved-word collisions. Currently the `|` characters break the parse.
-- **Multi-line `compound_name` cascade** — `command_parameter`'s `compound_name` value greedily spans newlines into the next statement (the cause of the 10 remaining corpus errors). Documented above under "Real-world coverage".
-- **`to <ident>` ambiguity** inside expression bodies — `move X to trash` vs `to handlerName()`. GLR keeps both alive and picks handler-def in cascade cases. Would need a column-aware scanner.
+- **Pipe-delimited identifiers** (`|My Identifier|`) — resolved in v1.3.0; listed here for historical reference only.
+- **Multi-line `compound_name` cascade** — `command_parameter`'s `compound_name` value greedily spans newlines into the next statement. Documented above under "Real-world coverage".
 
 ### Intentionally not modeled
 
@@ -144,7 +144,7 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 
 ## Roadmap
 
-**Status: maintenance mode as of v1.3.0.** All editor surfaces are wired, the active 32-file real-world corpus parses with 0 ERROR + 0 MISSING, and the remaining items below all share a single primitive (a column-aware external scanner) that's already been attempted unsuccessfully under LLM-driven edits. AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
+**Status: maintenance mode as of v1.4.0.** All editor surfaces are wired, the active 33-file real-world corpus parses with 0 ERROR + 0 MISSING, and the remaining items below all require further column-aware external scanner work. AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
 
 ### Done
 
@@ -156,13 +156,13 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 - **External scanner** (`src/scanner.c`): quote-aware block comments; context-sensitive `alias` keyword.
 - **v1.2 additions**: `idle` handler (corpus-locked); `continue <command>` delegation; JXA detection in `run script "…"` injections (switches injected language between `applescript` and `javascript` based on JS-shaped tokens in the string body).
 - **v1.3.0 addition**: pipe-delimited identifiers (`|name with spaces|`) — external scanner token, accepted everywhere an identifier slot exists.
+- **v1.4.0 addition**: context-sensitive `to` — column-aware external token; `move X to Y` and `from N to M` no longer mis-parse as handler headers. Unblocked `colorsync_extract.applescript` (now in the active corpus).
 
 ### Deferred — needs external-scanner work, not LLM-driven
 
 - **Multi-line `compound_name` cascade** — needs column-aware lexing. Multiple LLM-driven attempts reverted; deferred until a human-driven session.
-- **Context-sensitive `to` ambiguity** — same column-aware-lexing primitive as above.
 
-All three of these share the column-aware-scanner primitive; landing it would also unlock the four files in `test/corpus/realworld/known-limits/` and (if anyone still cares) AppleScript Studio support.
+This shares the column-aware-scanner primitive already introduced in v1.4.0; landing it would also unlock the remaining three files in `test/corpus/realworld/known-limits/` and (if anyone still cares) AppleScript Studio support.
 
 ### Out of scope
 
