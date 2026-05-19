@@ -1,0 +1,1332 @@
+
+Documentation Archive Developer
+Search
+Search Documentation Archive
+AppleScript Language Guide
+PDF Companion File
+	•	
+	•	
+Previous
+Index
+A number represents a single reference to a topic.
+A number with a "+" sign represents a longer discussion of a topic.
+
+
+
+Symbols   A   B   C   D   E   F   G   H   I   K   L   M   N   O   P   Q   R   S   T   U   V   W   Y   
+Symbols
+* operator 1
++ operator 1
+/ operator 1
+= operator 1
+& (concatenation) operator 1
+& operator 1
+& operator 1
+> operator 1
+>= operator 1
+< operator 1
+<= operator 1
+" character 1
+\ character 1
+^ operator 1
+{} characters 1
+| in identifiers 1
+| in syntax definitions 1
+
+
+
+
+
+
+
+A
+a reference to operator 1 2 3 4 5
+about handler parameter label 1
+above handler parameter label 1
+absolute object specifiers 1
+activate command 1
+adding folder items to Folder Actions handler 1
+addition operator 1
+addition
+ 
+of date values 1
+administrator privileges parameter
+ 
+of command do shell script 1
+after reserved word 1
+against handler parameter label 1
+alert volume parameter
+ 
+of command set volume 1
+alias class 1
+alias
+ 
+specifying a file by 1
+aliases and files 1+
+aliases
+ 
+working with 1
+altering line endings parameter
+ 
+of command do shell script 1
+and operator 1
+angle brackets in scripts 1+
+apart from handler parameter label 1
+Apple event code 1
+Apple events 1
+AppleScript character set (Unicode) 1
+AppleScript constant 1
+ 
+AppleScript 1
+ 
+current application 1
+AppleScript global constants 1
+AppleScript property
+ 
+missing value 1
+ 
+pi constant 1
+ 
+result 1
+ 
+text constants 1
+ 
+text item delimiters 1
+ 
+version 1
+AppleScript suite 1
+AppleScript
+ 
+commands 1
+ 
+constants 1
+ 
+defined 1
+ 
+error numbers 1 2 3 4
+ 
+fundamentals 1+
+ 
+keywords 1 2+
+ 
+lexical conventions 1+
+ 
+script objects 1+
+ 
+unsupported terms 1
+ 
+variables and properties 1+
+application class 1
+application commands 1
+application object 1
+applications
+ 
+remote 1
+arbitrary reference form 1
+arithmetic, date-time 1
+around handler parameter label 1
+as (coercion) operator 1
+as operator 1 2
+as parameter
+ 
+of command choose application 1
+ 
+of command display alert 1
+ 
+of command do shell script 1
+ 
+of command get 1
+ 
+of command path to (application) 1
+ 
+of command path to (folder) 1
+ 
+of command read 1
+ 
+of command the clipboard 1
+ 
+of command write 1
+as user name parameter
+ 
+of command mount volume 1
+ASCII character command 1
+ASCII number command 1
+aside from handler parameter label 1
+assignment statement 1
+associativity, of operators 1
+at handler parameter label 1
+B
+back of reserved words 1
+back reserved word 1 2
+backslash character in text 1
+beep command 1
+before parameter
+ 
+of command read 1
+before reserved word 1
+beginning reserved word 1
+begins with operator 1
+behind reserved word 1
+below handler parameter label 1
+beneath handler parameter label 1
+beside handler parameter label 1
+between handler parameter label 1
+binary operator 1
+Bonjour
+ 
+and remote applications 1 2
+ 
+service types 1
+boolean class 1
+Boolean constants 1 2 3
+boolean expressions 1
+brackets 1
+but keyword 1
+buttons parameter
+ 
+of command display alert 1
+ 
+of command display dialog 1
+by handler parameter label 1
+C
+cancel button name parameter
+ 
+of command choose from list 1
+cancel button parameter
+ 
+of command display alert 1
+ 
+of command display dialog 1
+case attribute 1
+character element 1
+character
+ 
+elements of a text object 1
+chevrons 1 2
+child script objects 1
+choose application command 1
+choose color command 1
+choose file command 1
+choose file name command 1
+choose folder command 1
+choose from list command 1
+choose remote application command 1
+choose URL command 1
+class class 1
+class property 1 2 3 4 5 6 7 8 9 10 11 12 13 14
+class
+ 
+defined 1
+ 
+reference 1+
+classes
+ 
+mutable 1
+Clipboard Commands suite 1
+clipboard info command 1
+close access command 1
+closing folder window for Folder Actions handler 1
+coercion operator (as) 1
+coercion
+ 
+see object conversion 1
+comes after operator 1
+comes before operator 1
+commands
+ 
+AppleScript 1
+ 
+application 1
+ 
+defined 1
+ 
+direct parameter of 1
+ 
+reference 1+
+ 
+scripting addition 1
+ 
+target of 1
+ 
+user-defined 1
+ 
+waiting for completion of 1
+comments 1
+ 
+block 1
+ 
+end-of-line 1
+completion
+ 
+of commands 1
+compound statements 1
+concatenation operator (&) 1 2
+considering / ignoring (application responses) control statement 1
+considering / ignoring (text comparison) control statement 1
+considering and ignoring statements 1
+considering statements (application responses) 1
+considering statements (string comparison) 1
+constant class 1
+constant
+ 
+defined 1
+constants
+ 
+AppleScript 1
+ 
+Boolean 1 2 3
+ 
+days of the week 1
+ 
+months of the year 1
+ 
+text 1
+ 
+white space 1
+constructor functions 1
+containers 1
+contains operator 1 2
+contains, is contained by operator 1
+contents property 1 2 3 4
+continue statement
+ 
+defined 1
+ 
+in script objects 1
+control statements reference 1+
+conventions in this book 1
+copy command 1
+count command 1
+current application and parent property 1
+current application constant 1
+current date command 1
+current script 1
+current target 1 2
+D
+date class 1
+date string property 1
+date, relative 1
+date-time arithmetic 1
+day property 1
+days of the week constants 1
+debugging tips 1
+ 
+flow of control 1
+ 
+log statements 1
+ 
+third party debuggers 1
+default answer parameter
+ 
+of command display dialog 1
+default button parameter
+ 
+of command display alert 1
+ 
+of command display dialog 1
+default color parameter
+ 
+of command choose color 1
+default items parameter
+ 
+of command choose from list 1
+default location parameter
+ 
+of command choose file 1
+ 
+of command choose file name 1
+ 
+of command choose folder 1
+default name parameter
+ 
+of command choose file name 1
+delay command 1
+delegation 1
+diacriticals attribute 1
+dictionary
+ 
+defined 1
+ 
+displaying 1
+ 
+when not available 1
+direct parameter of commands 1
+display alert command 1
+display dialog command 1
+display notification command 1
+displaying parameter
+ 
+of command say 1
+div operator 1
+
+do shell script command 1
+does not come after operator 1 2
+does not come before operator 1
+does not contain operator 1
+does not equal operator 1
+double angle brackets 1+
+double-quote character 1
+E
+editable URL parameter
+ 
+of command choose URL 1
+eighth reserved word 1
+elements of objects 1
+ellipsis in syntax definitions 1
+else clause 1
+else if clause 1
+empty list 1
+empty selection allowed parameter
+ 
+of command choose from list 1
+enabling remote applications 1
+end reserved word 1
+ends with operator 1 2
+eppc-style specifier 1
+equal operator 1
+equal, is not equal to operator 1
+equals operator 1
+error control statement 1
+error numbers
+ 
+AppleScript 1 2 3 4
+ 
+defined 1
+error reporting parameter
+ 
+of command open location 1
+error
+ 
+expression 1
+ 
+handlers 1
+ 
+handling 1
+ 
+message 1
+ 
+user cancelled 1
+errors
+ 
+resignaling in scripts 1
+ 
+signaling in scripts 1
+ 
+types of 1
+ 
+working with 1+
+evaluation
+ 
+defined 1
+ 
+of expressions 1
+Event Log History window 1
+event timed out error message 1
+every reference form 1
+every reserved word 1
+exit control statement 1
+exit from repeat loop 1
+explicit run handlers 1
+exponent operator (^) 1
+expressions 1
+ 
+boolean 1
+ 
+evaluation of 1
+F
+false constant 1 2
+fifth reserved word 1
+file class 1
+File Commands suite 1
+File Read/Write suite 1
+files and aliases 1+
+files, specifying
+ 
+by alias 1
+ 
+by name 1
+ 
+by pathname 1
+filter reference form 1
+first reserved word 1
+Folder Actions reference 1+
+folder creation parameter
+ 
+of command path to (folder) 1
+for handler parameter label 1
+for parameter
+ 
+of command clipboard info 1
+ 
+of command read 1
+ 
+of command write 1
+fourth reserved word 1
+from handler parameter label 1
+from parameter
+ 
+of command path to (folder) 1
+ 
+of command random number 1
+ 
+of command read 1
+from reserved word 1
+from table parameter
+ 
+of command localized string 1
+front of reserved words 1
+front reserved word 1 2
+frontmost property 1
+G
+get command 1
+get eof command 1
+get volume settings command 1
+given handler parameter label 1
+giving up after parameter
+ 
+of command display alert 1
+ 
+of command display dialog 1
+global constants
+ 
+of AppleScript 1
+global variables 1 2
+ 
+persistence of 1
+ 
+scope of 1
+greater than operator 1 2
+greater than or equal to operator 1
+greater than, less than operator 1
+H
+handle CGI request (unsupported) 1
+handlers
+ 
+call syntax
+ 
+ 
+labeled parameters 1
+ 
+ 
+positional parameters 1 2
+ 
+calling from a tell statement 1
+ 
+defined 1
+ 
+defining simple 1
+ 
+defining syntax
+ 
+ 
+labeled parameters 1
+ 
+ 
+no parameters 1
+ 
+ 
+positional parameters 1 2
+ 
+errors in 1
+ 
+for errors 1
+ 
+for stay-open script applications 1+
+ 
+idle 1
+ 
+in script applications 1
+ 
+libraries of 1
+ 
+open 1
+ 
+overview 1+
+ 
+quit 1
+ 
+recursive 1
+ 
+reference 1+
+ 
+run 1
+ 
+scope of identifiers declared within 1
+has parameter
+ 
+of command system attribute 1
+hidden answer parameter
+ 
+of command display dialog 1
+hyphens attribute 1 2
+I
+id property 1 2 3
+ID reference form 1
+id reserved word 1
+identifiers 1
+idle handlers 1
+if (compound) control statement 1
+if (simple) control statement 1
+ignoring statements (application responses) 1
+ignoring statements (string comparison) 1
+implicit run handlers 1
+implicitly specified subcontainers 1
+in AppleTalk zone parameter
+ 
+of command mount volume 1
+in back of reserved words 1
+in bundle parameter
+ 
+of command localized string 1
+ 
+of command path to resource 1
+in directory parameter
+ 
+of command path to resource 1
+in front of reserved words 1
+in parameter
+ 
+of command offset 1
+ 
+of command run script 1
+ 
+of command store script 1
+ 
+of command summarize 1
+in
+ 
+for specifying a container 1
+ 
+with date objects 1
+index reference form 1
+index reserved word 1
+info for command 1
+inheritance 1+
+ 
+examples of 1
+initializing script objects 1+
+input volume parameter
+ 
+of command set volume 1
+insertion point 1
+insertion point object
+ 
+and index reference form 1
+ 
+and relative reference form 1
+instead of handler parameter label 1
+integer class 1
+integral division operator 1
+internet address (unsupported) 1
+Internet suite 1
+into handler parameter label 1
+invisibles parameter
+ 
+of command choose file 1
+ 
+of command choose folder 1
+ 
+of command list folder 1
+is contained by operator 1 2
+is equal to operator 1
+is not contained by operator 1
+is not equal to operator 1
+is not greater than operator 1
+is not less than operator 1
+is not operator 1
+is operator 1
+it keyword 1
+item element 1
+items 1 2
+its reserved word 1
+K
+keywords, AppleScript 1 2
+L
+labeled parameters, of handlers 1
+language elements in syntax definitions 1
+large lists
+ 
+inserting in 1
+last reserved word 1
+launch command 1
+length property 1 2 3
+less than operator 1 2
+less than or equal to operator 1
+libraries of handlers 1
+lifetime of variables and properties 1
+linefeed constant 1
+list class 1
+list disks command 1
+list folder command 1
+lists
+ 
+inserting in large 1
+ 
+merging 1
+literal expressions 1
+load script command 1 2
+local variables 1 2 3
+ 
+scope of 1
+localized string command 1
+location parameters 1
+log command 1
+log statements 1
+loop variable 1 2
+lowercase letters 1
+M
+me keyword 1
+merging lists 1
+message parameter
+ 
+of command display alert 1
+middle reference form 1
+middle reserved word 1
+
+Miscellaneous Commands suite 1
+missing value constant 1
+mod operator 1
+month property 1
+months of the year constants 1
+mount volume command 1
+moving folder window for Folder Actions handler 1
+multiple selections allowed parameter
+ 
+of command choose application 1
+ 
+of command choose file 1
+ 
+of command choose folder 1
+ 
+of command choose from list 1
+multiplication operator (*) 1
+mutable classes 1
+my reserved word 1
+my
+ 
+in tell statements 1
+N
+name property 1 2
+name reference form 1
+name
+ 
+specifying a file by 1
+named reserved word 1
+nested tell statements 1
+ 
+examples 1
+ninth reserved word 1
+not operator 1
+number class 1
+numeric literal 1
+O
+object conversion (coercion) 1
+object conversion
+ 
+table of supported conversions 1
+object specifiers 1 2
+ 
+absolute 1
+ 
+contents of 1
+ 
+evaluating with contents property 1
+ 
+implicitly specified subcontainers 1
+ 
+in reference objects 1
+ 
+relative 1
+objects
+ 
+elements of 1
+ 
+properties of 1
+ 
+script
+ 
+ 
+initializing 1+
+ 
+ 
+parent 1+
+ 
+ 
+sending commands to 1
+ 
+using in AppleScript 1
+of me
+ 
+in tell statements 1
+of my keyword 1
+of parameter
+ 
+of command offset 1
+of type parameter
+ 
+of command choose file 1
+of
+ 
+for specifying a container 1
+ 
+with date objects 1
+offset command 1
+OK button name parameter
+ 
+of command choose from list 1
+on handler parameter label 1
+on server parameter
+ 
+of command mount volume 1
+onto handler parameter label 1
+open for access command 1
+open handlers 1
+open location command 1
+opening folder Folder Actions handler 1
+operators
+ 
+binary 1
+ 
+defined 1
+ 
+listed, with descriptions 1+
+ 
+precedence 1
+ 
+reference 1+
+ 
+unary 1
+or operator 1
+out of handler parameter label 1
+output muted parameter
+ 
+of command set volume 1
+output volume parameter
+ 
+of command set volume 1
+over handler parameter label 1
+P
+paragraph element 1
+parameter variables 1 2
+parameters
+ 
+direct 1
+ 
+in continue statements 1
+ 
+labeled 1
+ 
+location 1
+ 
+passing by reference versus value 1
+ 
+patterned 1
+ 
+positional 1 2
+parent property 1
+parent script objects 1+
+password parameter
+ 
+of command do shell script 1
+path to (application) command 1
+path to (folder) command 1
+path to resource command 1
+pathname
+ 
+specifying a file by 1
+paths, specifying a file with 1
+patterned parameters 1
+persistence
+ 
+of global variables 1
+ 
+of script properties 1
+pi constant 1
+placeholders in syntax definitions 1
+plural object names 1
+plus symbol (+) 1
+positional parameters, of handlers 1 2
+POSIX file class 1
+POSIX files
+ 
+using with files and aliases 1+
+POSIX path property 1
+possessive notation ('s) 1
+possessive object names 1
+precedence
+ 
+of attributes 1
+ 
+of operations 1
+properties
+ 
+declaring 1
+ 
+lifetime of 1
+ 
+of objects 1
+ 
+of script objects 1
+ 
+scope of 1
+property reference form 1
+punctuation attribute 1
+put, (Deprecated--use copy) 1
+Q
+quit handlers 1
+quoted form property 1
+R
+random number command 1
+range reference form 1
+raw apple events 1
+raw data
+ 
+displayed by AppleScript 1
+ 
+entering in a script 1
+raw format 1
+read command 1
+real class 1
+record class 1
+recursion 1
+recursive handlers 1
+reference class 1
+reference forms 1+
+ 
+arbitrary 1
+ 
+defined 1
+ 
+every 1
+ 
+filter 1
+ 
+ID 1
+ 
+index 1
+ 
+middle 1
+ 
+name 1
+ 
+property 1
+ 
+range 1
+ 
+relative 1
+relative object specifiers 1
+relative reference form 1
+relative to
+ 
+with date objects 1
+remainder operator 1
+remote applications 1
+ 
+choosing 1
+ 
+enabling 1
+ 
+targeting 1
+removing folder items from Folder Actions handler 1
+reopen command 1
+repeat (forever) control statement 1
+repeat (number) times control statement 1
+repeat control statements 1
+repeat until control statement 1
+repeat while control statement 1
+repeat with loopVariable (from startValue to stopValue) control statement 1
+repeat with loopVariable (in list) control statement 1
+replacing parameter
+ 
+of command store script 1
+reserved words (see keywords) 1
+rest of property 1
+rest property 1
+Result pane 1 2
+result property 1
+result variable 1
+result, of statement 1
+return character
+ 
+in text objects 1
+return constant 1
+return statement 1
+ 
+in handler definition 1
+returning, Deprecated reserved word 1
+reverse property 1 2
+RGB color class 1
+round command 1
+rounding parameter
+ 
+of command round 1
+run command 1
+run handlers 1
+ 
+explicit 1
+ 
+implicit 1
+ 
+in script objects 1 2
+run script command 1
+running property 1
+runTarget parameter
+ 
+of command run 1
+S
+saving to parameter
+ 
+of command say 1
+say command 1
+scope
+ 
+of variables and properties 1
+ 
+shadowing 1 2
+script applications 1
+ 
+calling 1
+ 
+handlers for 1
+ 
+Mac OS 9 compatible 1
+ 
+modern bundle format 1
+ 
+startup screen in 1
+ 
+stay-open 1
+script class 1
+Script Editor
+ 
+Event Log History window 1 2
+ 
+location in system 1
+ 
+overview 1
+script objects 1+
+ 
+child 1
+ 
+contents of 1
+ 
+defined 1
+ 
+initializing 1+
+ 
+parent 1+
+ 
+scope of identifiers declared at top level of 1
+ 
+sending commands to 1
+ 
+syntax of 1
+script properties
+ 
+persistence of 1
+ 
+scope of 1
+script, current 1
+scripting addition
+ 
+command 1
+ 
+overview 1
+scripting components command 1
+Scripting suite 1
+second reserved word 1
+set command 1 2
+set eof command 1
+set the clipboard to command 1
+set volume command 1
+seventh reserved word 1
+short-circuiting, during evaluation 1
+showing package contents parameter
+ 
+of command choose file 1
+ 
+of command choose folder 1
+showing parameter
+ 
+of command choose URL 1
+simple statements 1
+since handler parameter label 1
+sixth reserved word 1
+size parameter
+ 
+of command info for 1
+slash symbol (/) 1
+some reserved word 1
+sound name parameter
+ 
+of command display notification 1
+space constant 1
+special characters
+ 
+in identifiers 1
+ 
+in text 1
+Standard suite 1
+starting at parameter
+ 
+of command write 1
+starts with operator 1 2
+starts with, ends with operator 1
+startup screen in script applications 1
+statements 1
+ 
+compound 1
+ 
+simple 1
+stay-open script applications 1
+store script command 1
+storing values in variables 1
+string class 1
+String Commands suite 1
+subtitle parameter
+ 
+of command display notification 1
+subtraction of date values 1
+
+suites
+ 
+AppleScript 1
+ 
+Clipboard Commands 1
+ 
+File Commands 1
+ 
+File Read/Write 1
+ 
+Internet 1
+ 
+Miscellaneous Commands 1
+ 
+Scripting 1
+ 
+Standard 1
+ 
+String Commands 1
+ 
+User Interaction 1
+summarize command 1
+synonyms for whose 1
+system attribute command 1
+system info command 1
+T
+tab character
+ 
+in text objects 1
+tab constant 1
+target, current 1 2
+target
+ 
+of commands 1
+targeting remote applications 1
+tell (compound) control statement 1
+tell (simple) control statement 1
+tell statements 1 2
+ 
+nested 1
+ 
+nested, examples of 1
+tenth reserved word 1
+terminating
+ 
+handler execution 1
+ 
+repeat statement execution 1
+test
+ 
+Boolean 1
+ 
+in filter reference form 1
+text class 1
+text element 1
+text item delimiters
+ 
+AppleScript property 1
+text literal 1
+text
+ 
+as replacement for string 1
+ 
+constants 1 2
+ 
+special characters in 1
+that reserved word 1
+the clipboard command 1
+the reserved word (syntactic no-op) 1
+then reserved word 1
+third reserved word 1
+through handler parameter label 1
+through reserved word 1
+thru handler parameter label 1
+thru reserved word 1
+time property 1
+time string property 1
+time to GMT command 1
+timeout, default value 1
+times reserved word 1
+to parameter
+ 
+of command copy 1
+ 
+of command random number 1
+ 
+of command read 1
+ 
+of command set 1
+ 
+of command set eof 1
+ 
+of command write 1
+transaction reserved word 1
+true constant 1 2
+try control statement 1
+try statements 1
+U
+unary operators 1
+under handler parameter label 1
+Unicode text class 1
+unit types class 1
+Unix executable
+ 
+making script into 1
+unsupported terms 1
+until parameter
+ 
+of command read 1
+uppercase letters 1
+use (AppleScript) control statement 1
+use (application or script) control statement 1
+use (framework) control statement 1
+use (scripting additions) control statement 1
+user cancelled error 1
+User Interaction suite 1
+user name parameter
+ 
+of command do shell script 1
+user-defined commands 1
+using delimiter parameter
+ 
+of command read 1
+using delimiters parameter
+ 
+of command read 1
+using parameter
+ 
+of command say 1
+using terms from control statement 1
+V
+variables 1
+ 
+declaring 1
+ 
+declaring with copy command 1
+ 
+declaring with set command 1
+ 
+defined 1
+ 
+global 1 2 3
+ 
+lifetime of 1
+ 
+local 1 2 3 4
+ 
+scope of 1 2
+version property 1 2 3
+vertical bar character (|) in identifiers 1
+vertical bars (|)
+ 
+in syntax definitions 1
+W
+waiting until completion parameter
+ 
+of command say 1
+web page (unsupported) 1
+weekday property 1
+where reserved word 1 2
+while reserved word 1
+white space attribute 1
+white space constants 1
+whose reserved word 1
+whose
+ 
+synonyms for 1
+with clause 1
+with icon parameter
+ 
+of command display dialog 1 2 3
+with parameters parameter
+ 
+of command run script 1
+with password parameter
+ 
+of command mount volume 1
+with prompt parameter
+ 
+of command choose application 1
+ 
+of command choose file 1
+ 
+of command choose file name 1
+ 
+of command choose folder 1
+ 
+of command choose from list 1
+ 
+of command choose remote application 1
+with seed parameter
+ 
+of command random number 1
+with timeout control statement 1
+with timeout statements 1 2
+with title parameter
+ 
+of command choose application 1
+ 
+of command choose from list 1
+ 
+of command choose remote application 1
+ 
+of command display dialog 1
+ 
+of command display notification 1
+with transaction control statement 1
+without clause 1
+word element 1
+working with errors 1
+write command 1
+write permission parameter
+ 
+of command open for access 1
+Y
+year property 1
+Previous
+
+
+
+Copyright © 2016 Apple Inc. All Rights Reserved. Terms of Use | Privacy Policy | Updated: 2016-01-25
+
+
+
+
+Sending feedback…
+
+We’re sorry, an error has occurred.
+Please try submitting your feedback later.
+
+Thank you for providing feedback!
+Your input helps improve our developer documentation.
+
+How helpful is this document?
+*
+Very helpful Somewhat helpful Not helpful
+How can we improve this document?
+Fix typos or links Fix incorrect information Add or update code samples Add or update illustrations Add information about...
+*
+* Required information
+To submit a product bug or enhancement request, please visit the Bug Reporter page.
+Please read Apple's Unsolicited Idea Submission Policy before you send us your feedback.

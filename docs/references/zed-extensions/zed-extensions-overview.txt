@@ -1,0 +1,216 @@
+
+￼
+Search docs… S Search…
+	•	Light
+	•	Dark
+Download
+
+
+	•	
+	1	
+	2	Welcome
+	3	Getting Started
+	4	Installation
+	1	Update
+	2	Uninstall
+	5	Troubleshooting
+	6	
+	7	AI
+	8	Overview
+	9	Agent Panel
+	1	Tools
+	2	Tool Permissions
+	3	External Agents
+	10	Parallel Agents
+	11	Inline Assistant
+	12	Edit Prediction
+	13	Rules
+	14	Model Context Protocol
+	15	Configuration
+	1	LLM Providers
+	2	Agent Settings
+	16	Subscription
+	1	Models
+	2	Plans and Usage
+	3	Billing
+	17	
+	18	Working with Code
+	19	Windows & Projects
+	20	Editing Code
+	1	Code Completions
+	2	Snippets
+	3	Diagnostics & Quick Fixes
+	4	Multibuffers
+	21	Finding & Navigating
+	1	Command Palette
+	2	Outline Panel
+	3	Project Panel
+	4	Tab Switcher
+	22	Running & Testing
+	1	Terminal
+	2	Tasks
+	3	Debugger
+	4	REPL
+	23	Git
+	24	Modelines
+	25	
+	26	Collaboration
+	27	Overview
+	1	Channels
+	2	Contacts and Private Calls
+	28	
+	29	Remote Development
+	30	Overview
+	31	Environment Variables
+	32	Dev Containers
+	33	
+	34	Platform Support
+	35	macOS
+	36	Windows
+	37	Linux
+	38	
+	39	Customization
+	40	Appearance
+	1	Themes
+	2	Icon Themes
+	3	Fonts & Visual Tweaks
+	41	Keybindings
+	1	Vim Mode
+	2	Helix Mode
+	42	
+	43	Language Support
+	44	All Languages
+	45	Configuring Languages
+	1	Toolchains
+	2	Semantic Tokens
+	46	Ansible
+	47	AsciiDoc
+	48	Astro
+	49	Bash
+	50	Biome
+	51	C
+	52	C++
+	53	C#
+	54	Clojure
+	55	CSS
+	56	Dart
+	57	Deno
+	58	Diff
+	59	Docker
+	60	Elixir
+	61	Elm
+	62	Emmet
+	63	Erlang
+	64	Fish
+	65	GDScript
+	66	Gleam
+	67	GLSL
+	68	Go
+	69	Groovy
+	70	Haskell
+	71	Helm
+	72	HTML
+	73	Java
+	74	JavaScript
+	75	Julia
+	76	JSON
+	77	Jsonnet
+	78	Kotlin
+	79	Lua
+	80	Luau
+	81	Makefile
+	82	Markdown
+	83	Nim
+	84	OCaml
+	85	OpenTofu
+	86	PHP
+	87	PowerShell
+	88	Prisma
+	89	Proto
+	90	PureScript
+	91	Python
+	92	R
+	93	Rego
+	94	ReStructuredText
+	95	Racket
+	96	Roc
+	97	Ruby
+	98	Rust
+	99	Scala
+	100	Scheme
+	101	Shell Script
+	102	SQL
+	103	Standard ML
+	104	Svelte
+	105	Swift
+	106	Tailwind CSS
+	107	Terraform
+	108	TOML
+	109	TypeScript
+	110	Uiua
+	111	Vue
+	112	XML
+	113	YAML
+	114	Yara
+	115	Yarn
+	116	Zig
+	117	
+	118	Extensions
+	119	Overview
+	120	Installing Extensions
+	121	Developing Extensions
+	122	Extension Capabilities
+	123	Language Extensions
+	124	Debugger Extensions
+	125	Theme Extensions
+	126	Icon Theme Extensions
+	127	Snippets Extensions
+	128	Agent Server Extensions
+	129	MCP Server Extensions
+	130	
+	131	Coming From…
+	132	VS Code
+	133	IntelliJ IDEA
+	134	PyCharm
+	135	WebStorm
+	136	RustRover
+	137	
+	138	Reference
+	139	All Settings
+	140	All Actions
+	141	CLI Reference
+	142	
+	143	Account & Privacy
+	144	Authenticate
+	145	Roles
+	146	Privacy and Security
+	1	Worktree Trust
+	2	AI Improvement
+	147	Telemetry
+	148	
+	149	Developing Zed
+	150	Developing Zed
+	1	macOS
+	2	Linux
+	3	Windows
+	4	FreeBSD
+	5	Using Debuggers
+	6	Performance
+	7	Glossary
+	151	Release Notes
+	152	Debugging Crashes
+Extensions
+Zed lets you add new functionality using user-defined extensions.
+	•	Installing Extensions
+	•	Extension Capabilities
+	•	Developing Extensions
+	◦	Developing Language Extensions
+	◦	Developing Debugger Extensions
+	◦	Developing Themes
+	◦	Developing Icon Themes
+	◦	Developing Snippets
+	◦	Developing Agent Servers
+	◦	Developing MCP Servers
+Zig Installing Extensions
+￼ • Back to Site • Releases • Roadmap • GitHub • Blog • Manage Site Cookies
+
