@@ -8,4 +8,4 @@ repository = "https://github.com/HelgeSverre/zed-applescript"
 
 [grammars.applescript]
 repository = "https://github.com/HelgeSverre/tree-sitter-applescript"
-commit = "2ffbde9fc76ef67654c3f57528167d1ea29f3359"
+commit = "1d74fe025617cb3a7cba5106abaa0162791922c1"

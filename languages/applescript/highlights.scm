@@ -1,9 +1,9 @@
 ; Comments
 (comment) @comment
 
-; Strings and escape sequences
+; Strings (string is a single opaque token; escape sequences inside are
+; not modelled as separate nodes).
 (string) @string
-(escape_sequence) @string.escape
 
 ; Numbers
 (number) @number
