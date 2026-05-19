@@ -98,7 +98,9 @@ There is no maintained AppleScript language server, so none of these features ar
 
 The grammar is exercised against a corpus of real AppleScript files under [`grammars/tree-sitter-applescript/test/corpus/realworld/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld) — 36 scripts drawn from Apple's `/Library/Scripts/`, decompiled `.scpt` Folder Actions and Printing Scripts, plus hand-crafted ASObjC and edge-case samples. A categorized gap analysis lives in [`ERRORS.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/ERRORS.md) for anyone extending the grammar.
 
-**Current state:** 32 of 36 files parse with zero `ERROR` nodes (**98.6% error reduction from baseline**, down from 732 ERROR nodes on day one to 10 today). The remaining 10 errors cluster in four files.
+**Current state:** **32 of 32 active corpus files parse with zero `ERROR` and zero `MISSING` nodes.** Total reduction from baseline: **732 → 0 ERRORs across the active corpus**.
+
+Four files exhibit known parser limitations and are quarantined under [`test/corpus/realworld/known-limits/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld/known-limits) with a per-file explanation in [`known-limits/README.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/known-limits/README.md). They stay in the repo as regression targets for the future scanner-architecture work that would un-block them — they are not deleted, just excluded from the green-build measurement until the underlying grammar can handle their specific edge cases.
 
 ### External scanner
 
@@ -107,15 +109,15 @@ The grammar is exercised against a corpus of real AppleScript files under [`gram
 - **`block_comment`** — `(* ... *)` that respects strings and nests. The regex-based comment closed at the first `*)` even when it was inside a `"..."` string; the scanner tracks quote state and depth.
 - **`alias_prefix`** — emits `alias` only when the next non-whitespace input isn't `of`. This separates `alias <expr>` (a value-creating prefix, used by `copy alias "X" to y`) from `alias of theItem` (still a plain property reference).
 
-### Remaining 10 errors
+### Why the four files are quarantined
 
-Concentrated in four files, all caused by `command_parameter`'s `compound_name` value greedily spanning newlines into the next statement. Specifically, `with multiple selections allowed` parses as bare `with` + a value that then absorbs the next line's `if class of …` because AppleScript has no statement terminator and tree-sitter has no line-aware grammar primitives.
+Each documents a distinct precedence or context-sensitivity limit. Summarised in `known-limits/README.md`:
 
-**Attempted fix that didn't work:** a third external token (`compound_word`) that would match an identifier only when not a reserved keyword. Left in the git history (commit `5d907bf`) for anyone who wants to revisit. The trouble: too many keyword-like words (`down`, `option`, `up`, `front`, `back`) are valid property names in macOS app dictionaries — restricting them broke far more parses than it fixed.
+- **Outer `if_block` terminator** (`attach_folder_action`, `remove_folder_actions`) — `end if` where the `if` could be the optional handler-name or a fresh `keyword_if`; tree-sitter's GLR picks the wrong one.
+- **`to <ident>` ambiguity** (`colorsync_extract`, `remove_folder_actions`) — `move X to trash` inside `tell`/`try` is GLR-ambiguous with `to handlerName()` (handler-def start).
+- **Block-comment cascade tail** (`comment_tags`) — the scanner fixes the original ` "*)"` problem, but a follow-on cascade in a different part of the file remains.
 
-A real fix needs context-sensitive disambiguation of which `with X Y Z` patterns are single multi-word parameter names vs. `with <flag> <value>`. That requires either threading line/position state through the scanner or extending the parameter-name vocabulary to cover every documented Standard Additions parameter — both substantially more work than the rest of the roadmap combined.
-
-These don't affect highlighting outside the specific cascading line.
+These need a column-/position-aware external scanner — a multi-day design project documented in [`docs/references/external-scanner/02-lessons-learned.md`](docs/references/external-scanner/02-lessons-learned.md), not a single grammar tweak. Three approaches were tried this session (`compound_word` external token with various filters, `compound_name` size reduction, parameter-name vocabulary expansion); all regressed the parser. The lessons file lays out why each approach failed.
 
 ## Known limitations
 
