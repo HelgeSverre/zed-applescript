@@ -98,9 +98,7 @@ There is no maintained AppleScript language server, so none of these features ar
 
 The grammar is exercised against a corpus of real AppleScript files under [`grammars/tree-sitter-applescript/test/corpus/realworld/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld) — 36 scripts drawn from Apple's `/Library/Scripts/`, decompiled `.scpt` Folder Actions and Printing Scripts, plus hand-crafted ASObjC and edge-case samples. A categorized gap analysis lives in [`ERRORS.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/ERRORS.md) for anyone extending the grammar.
 
-**Current state:** **35 of 35 active corpus files parse with zero `ERROR` and zero `MISSING` nodes.** Total reduction from baseline: **732 → 0 ERRORs across the active corpus**.
-
-One file exhibits a known parser limitation and is quarantined under [`test/corpus/realworld/known-limits/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld/known-limits) with a per-file explanation in [`known-limits/README.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/known-limits/README.md). It stays in the repo as a regression target for the future scanner-architecture work that would un-block it — not deleted, just excluded from the green-build measurement until the grammar can handle its specific edge case.
+**Current state:** **36 of 36 active corpus files parse with zero `ERROR` and zero `MISSING` nodes.** Total reduction from baseline: **732 → 0 ERRORs across the active corpus**. `known-limits/` is empty — every file originally quarantined this session is now in the active corpus.
 
 ### External scanner
 
@@ -109,16 +107,16 @@ One file exhibits a known parser limitation and is quarantined under [`test/corp
 - **`block_comment`** — `(* ... *)` that respects strings and nests. The regex-based comment closed at the first `*)` even when it was inside a `"..."` string; the scanner tracks quote state and depth.
 - **`alias_prefix`** — emits `alias` only when the next non-whitespace input isn't `of`. This separates `alias <expr>` (a value-creating prefix, used by `copy alias "X" to y`) from `alias of theItem` (still a plain property reference).
 
-### Why the remaining file is quarantined
+### Files unblocked this session
 
-`remove_folder_actions.applescript` has 3 ERROR nodes from rule-level cross-newline `compound_name` extension. After `tell app "Sys" to ¬\n  delete folder action X` followed by `end if` on the next line, the parser's rule-level `extras` skip the newline before the next `compound_name` continuation — so `end repeat` / `end if` tokens get pulled into a multi-line `compound_name`. The fix needs a row-tracking external token inside `compound_name`'s rule continuation, not just inside multi-word tokens.
+All four files originally quarantined this session were progressively unblocked:
 
-Previously unblocked files:
 - `colorsync_extract.applescript` — column-aware `keyword_handler_to` scanner token (v1.4.0).
 - `comment_tags.applescript` — multi-word tokens bounded to a single physical line (v1.5.0).
 - `attach_folder_action.applescript` — `inline_marker` external token for nested `if … then return … / end if` (v1.6.0).
+- `remove_folder_actions.applescript` — widened `if_simple_statement` tail + `keyword_script` accepted in `index_expression` (v1.7.0).
 
-The remaining work is documented in [`docs/references/external-scanner/02-lessons-learned.md`](docs/references/external-scanner/02-lessons-learned.md).
+The architectural lessons are catalogued in [`docs/references/external-scanner/02-lessons-learned.md`](docs/references/external-scanner/02-lessons-learned.md).
 
 ## Known limitations
 
@@ -144,7 +142,7 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 
 ## Roadmap
 
-**Status: maintenance mode as of v1.6.0.** All editor surfaces are wired, the active 35-file real-world corpus parses with 0 ERROR + 0 MISSING, and only one file remains in `known-limits/` (documented inline). AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
+**Status: maintenance mode as of v1.7.0.** All editor surfaces are wired, the active 36-file real-world corpus parses with 0 ERROR + 0 MISSING, and `known-limits/` is empty. AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
 
 ### Done
 
@@ -158,11 +156,8 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 - **v1.3.0 addition**: pipe-delimited identifiers (`|name with spaces|`) — external scanner token, accepted everywhere an identifier slot exists.
 - **v1.4.0 addition**: context-sensitive `to` — column-aware external token; `move X to Y` and `from N to M` no longer mis-parse as handler headers. Unblocked `colorsync_extract.applescript` (now in the active corpus).
 - **v1.5.0 addition**: multi-word grammar tokens (`default answer`, `with multiple selections allowed`, etc.) are now bounded to a single physical line — eliminates an entire class of cross-line gluing bugs. Unblocked `comment_tags.applescript` (now in the active corpus); `known-limits/` is down to 2 files.
-- **v1.6.0 addition**: `inline_marker` external token for `if_simple_statement` — disambiguates nested `if … then return … / end if / end if` and lets the tail accept any `_item` (so `if cond then ¬\n  tell app to do X` and `if cond then say "yes"` parse correctly). Unblocked `attach_folder_action.applescript`; `known-limits/` is down to **one** file.
-
-### Deferred — needs external-scanner work, not LLM-driven
-
-The remaining file in `known-limits/` (`remove_folder_actions.applescript`) needs a row-tracking external token inside `compound_name`'s rule continuation (not just inside multi-word tokens — that part was fixed in v1.5.0). Landing this would unlock the file and (if anyone still cares) AppleScript Studio support.
+- **v1.6.0 addition**: `inline_marker` external token for `if_simple_statement` — disambiguates nested `if … then return … / end if / end if` and lets the tail accept any same-line `_item`. Unblocked `attach_folder_action.applescript`.
+- **v1.7.0 addition**: widened `if_simple_statement` tail to set/copy/command_call/tell_simple_statement; `index_expression` accepts `keyword_script` as an alternative to `element_type`. Unblocked `remove_folder_actions.applescript` — **`known-limits/` is now empty**.
 
 ### Out of scope
 

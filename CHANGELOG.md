@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0]
+
+### Added
+
+- **`if_simple_statement` tail widened** to also accept `set_statement`, `copy_statement`, `command_call`, and `tell_simple_statement` — not just the original 5 atomic forms (return/exit/continue/error/log). Safe because `inline_marker` (v1.6.0) already constrains the tail to the same logical line. Eliminates the previously-documented "one-liner gap" — `if cond then say "hi"` and `if cond then set x to 5` now parse correctly without synthesising `MISSING keyword_end`.
+- **`index_expression` accepts `keyword_script`** as an alternative to `element_type`. The lexer always emits `keyword_script` for the bare word `script`, which previously made commands like `delete script X of folder action Y` (common in folder-action scripts) unparseable — `script` was unreachable from `element_type`'s alternatives.
+
+### Fixed
+
+- Last quarantined file resolved. `remove_folder_actions.applescript` now parses cleanly and is in the active corpus. **`known-limits/` is empty.** Active corpus is **36/36** with 0 ERROR + 0 MISSING — all four files originally quarantined this session are unblocked.
+
+### Changed
+
+- Grammar pin bumped to `2ffbde9`.
+
 ## [1.6.0]
 
 ### Fixed
