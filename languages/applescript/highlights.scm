@@ -16,6 +16,7 @@
 (applescript_constant) @constant.builtin
 (me_reference) @variable.special
 (it_reference) @variable.special
+(its_reference) @variable.special
 (result_reference) @variable.special
 
 ; Operators

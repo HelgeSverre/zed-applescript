@@ -171,44 +171,50 @@ Two limitations need an external C scanner to fix, not just grammar rules:
 
 In rough priority order (highest impact / lowest effort first):
 
-1. **Quick wins (purely additive, no precedence work):**
-   - Add `with transaction` block
-   - Add `numeric strings`, `expansion` to `text_attribute`
-   - Add `but considering` / `but ignoring` clauses
-   - Add AppleScript built-in constants (`pi`, `space`, `tab`, `return`, `linefeed`, `quote`, `null`) as named tokens for highlighting
-   - Add day-of-week and month names as named tokens
-   - Add time-unit constants (`seconds`, `minutes`, `hours`, `days`, `weeks`) as named tokens
+1. **Quick wins (purely additive, no precedence work):** ✅ done
+   - ✅ `with transaction` block
+   - ✅ `numeric strings`, `expansion` to `text_attribute`
+   - ✅ `but considering` / `but ignoring` clauses
+   - ✅ AppleScript built-in constants (`pi`, `space`, `tab`, `linefeed`, `quote`) — `return` excluded to avoid lexer collision with the return statement keyword
+   - ✅ Day-of-week (`Monday`–`Sunday`) and month (`January`–`December`) names
+   - ✅ Time-unit constants (`seconds`, `minutes`, `hours`, `days`, `weeks`)
 
-2. **Operator polish:**
-   - Add the operator synonyms listed above to `comparison_operator`
-   - Add deprecated keywords (`returning`, `put`, `prop`, `ref`) as named tokens so they don't masquerade as identifiers
+2. **Operator polish:** ✅ done
+   - ✅ Operator synonyms (`equal`, `equals`, `equal to`, `is equal to`; `isn't equal to`, `does not equal`, `doesn't equal`; `is contained by`, `isn't contained by`; `doesn't come before` / `doesn't come after`; `start with` / `begin with` / `end with` singular)
+   - ✅ Deprecated short forms: `prop` (alias for `property`), `ref` (alias for `reference`)
+   - ❌ `returning`, `put` — context-specific and rare; skipped to avoid grammar churn
 
 3. **Idiomatic AppleScript:**
-   - `its` as a special reference distinct from `it`
-   - Ordinal-suffix numbers (`1st`, `2nd`, …) as a literal form
-   - `idle` handler with explicit return-interval semantics
+   - ✅ `its_reference` as a distinct special reference (separate from `it`)
+   - ✅ Ordinal-suffix numbers (`1st`, `2nd`, `23rd`, `101st`)
+   - ⏳ `idle` handler with explicit return-interval semantics — parses generically today; specific structure not yet modeled
 
 4. **Reference forms:**
-   - Relative reference forms (`before X`, `after Y`, `in front of Z`, `in back of W`, `behind Q`)
-   - Pipe-delimited identifiers (`|name with spaces|`) — needs a new token rule
+   - ✅ Relative reference forms (`before`, `after`, `behind`, `in front of`, `in back of`) as expression atoms — parses cleanly in expression position; binding into command parameters still subject to the `to`/handler-def ambiguity from item 7
+   - ⏳ Pipe-delimited identifiers (`|name with spaces|`) — needs a new token rule
 
-5. **`use` statement extensions:**
-   - Aliased binding (`use X: application "Y"`)
-   - `version` and `with importing` / `without importing` clauses
+5. **`use` statement extensions:** ✅ done
+   - ✅ Aliased binding (`use Safari: application "Safari"`)
+   - ✅ `version "X"` clause
+   - ✅ `with importing` / `without importing` clauses
+   - ✅ `use script "Library"` form
 
 6. **`continuing` flow:**
-   - `continue <command_call>` as a structured statement
+   - ⏳ `continue <command_call>` as a structured statement (currently parses as `continue_statement` + orphan command tokens)
 
 7. **External scanner (large project, defers indefinitely):**
-   - Quote-aware block comments
-   - Context-sensitive `alias` keyword
-   - This would also enable AppleScript Studio support (`on clicked theObject`, `tell window "Main"` etc.) and JXA detection in `run script "…"` injections
+   - Quote-aware block comments — affects `comment_tags.applescript`
+   - Context-sensitive `alias` keyword — affects `attach_folder_action.applescript`
+   - Context-sensitive `to` (`move X to Y` vs `to handlerName()`) — affects `colorsync_extract.applescript` and `remove_folder_actions.applescript`
+   - Would also enable AppleScript Studio support (`on clicked theObject`, `tell window "Main"`) and JXA detection in `run script "…"` injections
 
 8. **Intentionally out of scope:**
    - **Language server features** (completion, hover, go-to-def, diagnostics, rename, formatting) — no maintained AppleScript LSP exists; building one from scratch is its own multi-month project.
    - **Debugger (DAP)** — no AppleScript debugger exists outside Script Editor / Script Debugger.
    - **`.scptd` script bundles** — these are macOS packages, not files; Zed opens them as folders.
    - **JavaScript for Automation (JXA)** — a separate language that targets the same Apple-event APIs; would need its own grammar.
+
+For anyone picking up the remaining items, [`docs/references/`](docs/references/) caches the authoritative documentation (Apple Language Guide, tree-sitter authoring docs, Zed extension docs, external-scanner reference) so the next change can be made without round-tripping through the web.
 
 ## Installation
 
