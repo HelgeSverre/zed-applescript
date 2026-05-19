@@ -98,6 +98,14 @@ There is no maintained AppleScript language server, so none of these features ar
 
 The grammar is exercised against a corpus of real AppleScript files under [`grammars/tree-sitter-applescript/test/corpus/realworld/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld) — 36 scripts drawn from Apple's `/Library/Scripts/`, decompiled `.scpt` Folder Actions and Printing Scripts, plus hand-crafted ASObjC and edge-case samples. A categorized gap analysis lives in [`ERRORS.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/ERRORS.md) for anyone extending the grammar.
 
+**Current state:** 32 of 36 files parse with zero `ERROR` nodes (98.2% error reduction from baseline). The remaining 13 errors cluster in four files and are caused by three issues that need an external scanner to fix cleanly:
+
+- The block-comment regex (`(* … *)`) can't recognize that `"*)"` inside a string is part of the string, not the comment terminator. Affects `comment_tags.applescript`.
+- The `alias` keyword has dual roles — prefix (`copy alias "X" to y`) and property (`alias of theItem`) — that GLR can't disambiguate without context. Affects `attach_folder_action.applescript` lines using `copy alias ((…))`.
+- Multi-line `repeat` / `try` bodies where `to <ident>` could be either a command parameter or a handler-definition start. Affects `colorsync_extract.applescript` and `remove_folder_actions.applescript`.
+
+These don't affect highlighting outside the specific cascading line.
+
 ## Installation
 
 1. Open Zed
