@@ -144,7 +144,7 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 
 ## Roadmap
 
-**Status: maintenance mode as of v1.1.2.** All editor surfaces are wired, the active 32-file real-world corpus parses with 0 ERROR + 0 MISSING, and the remaining items below are either small on-demand polish or hit known parser limitations that need focused human work on the external scanner. AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
+**Status: maintenance mode as of v1.2.0.** All editor surfaces are wired, the active 32-file real-world corpus parses with 0 ERROR + 0 MISSING, and the remaining items below all share a single primitive (a column-aware external scanner) that's already been attempted unsuccessfully under LLM-driven edits. AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
 
 ### Done
 
@@ -154,12 +154,7 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 - **Reference forms**: `before`, `after`, `behind`, `in front of`, `in back of`.
 - **`use` statement extensions**: aliased binding, `version` clause, `with importing` / `without importing`, `use script "X"`.
 - **External scanner** (`src/scanner.c`): quote-aware block comments; context-sensitive `alias` keyword.
-
-### Candidates for v1.2 (small, low-risk, ship if a user asks)
-
-- **`idle` handler** with explicit return-interval semantics.
-- **`continuing <command>`** flow keyword as a structured statement.
-- **JXA detection in `run script "…"` injections** (when the literal looks like JS, inject `javascript` instead of `applescript`).
+- **v1.2 additions**: `idle` handler (corpus-locked); `continue <command>` delegation; JXA detection in `run script "…"` injections (switches injected language between `applescript` and `javascript` based on JS-shaped tokens in the string body).
 
 ### Deferred — needs external-scanner work, not LLM-driven
 

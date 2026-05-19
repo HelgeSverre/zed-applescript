@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0]
+
+### Added
+
+- **`continue <command>` delegation** — `continue_statement` now accepts an optional `command_call`, supporting the parent-handler delegation idiom (`on activate / continue activate / end activate`).
+- **`idle` handler** — already parsed as a regular handler; added a corpus fixture so the `on idle / return N / end idle` shape is locked.
+- **JXA injection** — `run script "…"` now injects `javascript` when the string body has JS-shaped tokens (`function`, `var`/`let`/`const`, `=>`, `//`, `Application(`), and `applescript` otherwise. The two injection rules use opposing `#match?` / `#not-match?` predicates so each string body matches exactly one.
+
 ### Fixed
 
 - Cleared remaining `MISSING keyword_end` in `with_clauses.applescript`. The active real-world corpus now parses with **zero ERROR + zero MISSING** (32/32 active files; 4 files remain documented in `known-limits/`).
@@ -14,8 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `extension.toml` grammar pin bumped to `33f919d` (was `160e21b`).
+- `extension.toml` grammar pin bumped to `cdbdc1c` (continue + idle + corpus). 86/86 fixture tests pass.
 - Documented the known one-liner gap (`if cond then <command_call>` parses as `if_block` with synthesized `end`) in `test/corpus/realworld/known-limits/README.md`.
+- `tree-sitter-applescript-old/` removed from the working tree; `AGENTS.md` is now a symlink to `CLAUDE.md`.
+- Roadmap rewritten to reflect maintenance mode (further parser work is demand-driven).
 
 ## [1.1.2] - 2026-05-19
 

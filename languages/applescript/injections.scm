@@ -12,10 +12,23 @@
   (#match? @_cmd "(?i)^do\\s+shell\\s+script$")
   (#set! injection.language "bash"))
 
-; `run script "..."` runs the string as AppleScript itself — recursive
-; injection.
+; `run script "..."` accepts either AppleScript source or JavaScript for
+; Automation (JXA). We inject AppleScript by default and switch to
+; JavaScript when the string body has JS-shaped tokens near the start —
+; `function`, `var`/`let`/`const` declarations, `=>` arrows, `//` line
+; comments, or `Application(` calls (the JXA entry point). The two rules
+; are mutually exclusive via opposing #match? / #not-match? predicates,
+; so each string body matches exactly one.
 (command_call
   command: (command_name) @_cmd
   argument: (string) @injection.content
   (#match? @_cmd "(?i)^run\\s+script$")
+  (#match? @injection.content "(?s)(\\bfunction\\s*[*(]|\\b(?:var|let|const)\\s+\\w|=>|//|\\bApplication\\s*\\()")
+  (#set! injection.language "javascript"))
+
+(command_call
+  command: (command_name) @_cmd
+  argument: (string) @injection.content
+  (#match? @_cmd "(?i)^run\\s+script$")
+  (#not-match? @injection.content "(?s)(\\bfunction\\s*[*(]|\\b(?:var|let|const)\\s+\\w|=>|//|\\bApplication\\s*\\()")
   (#set! injection.language "applescript"))
