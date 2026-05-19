@@ -40,6 +40,9 @@
 ; Parameter names in command calls
 (parameter_name) @property
 
+; Boolean flag parameter names — `with multiple selections allowed`, etc.
+(command_flag_name) @property
+
 ; Function/handler keywords (on, to)
 (keyword_function) @keyword.function
 (keyword_on) @keyword.function
