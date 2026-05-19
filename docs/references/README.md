@@ -62,6 +62,7 @@ The roadmap calls out two limits that need an external C scanner:
 | File | Source | Covers |
 | --- | --- | --- |
 | `01-scanner-c.md` | Context7 | `TSLexer` interface, `advance`/`lookahead`/`mark_end`/`eof_check`, `serialize`/`deserialize`, `externals` array, `valid_symbols` |
+| `02-lessons-learned.md` | this project | Concrete gotchas hit while writing `src/scanner.c`: whitespace handling, internal-lexer racing, the no-rewind rule, `mark_end` usage, cache invalidation, reserved-word filtering pitfalls. Read before extending the scanner. |
 | `ts-external-scanners.txt` | tree-sitter.github.io | Full upstream page |
 
 ### `zed-extensions/`

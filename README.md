@@ -98,123 +98,93 @@ There is no maintained AppleScript language server, so none of these features ar
 
 The grammar is exercised against a corpus of real AppleScript files under [`grammars/tree-sitter-applescript/test/corpus/realworld/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld) — 36 scripts drawn from Apple's `/Library/Scripts/`, decompiled `.scpt` Folder Actions and Printing Scripts, plus hand-crafted ASObjC and edge-case samples. A categorized gap analysis lives in [`ERRORS.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/ERRORS.md) for anyone extending the grammar.
 
-**Current state:** 32 of 36 files parse with zero `ERROR` nodes (98.2% error reduction from baseline). The remaining 13 errors cluster in four files and are caused by three issues that need an external scanner to fix cleanly:
+**Current state:** 32 of 36 files parse with zero `ERROR` nodes (**98.6% error reduction from baseline**, down from 732 ERROR nodes on day one to 10 today). The remaining 10 errors cluster in four files.
 
-- The block-comment regex (`(* … *)`) can't recognize that `"*)"` inside a string is part of the string, not the comment terminator. Affects `comment_tags.applescript`.
-- The `alias` keyword has dual roles — prefix (`copy alias "X" to y`) and property (`alias of theItem`) — that GLR can't disambiguate without context. Affects `attach_folder_action.applescript` lines using `copy alias ((…))`.
-- Multi-line `repeat` / `try` bodies where `to <ident>` could be either a command parameter or a handler-definition start. Affects `colorsync_extract.applescript` and `remove_folder_actions.applescript`.
+### External scanner
+
+[`src/scanner.c`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/src/scanner.c) is a hand-written C scanner that implements two context-sensitive tokens tree-sitter's pure-grammar lexer can't represent:
+
+- **`block_comment`** — `(* ... *)` that respects strings and nests. The regex-based comment closed at the first `*)` even when it was inside a `"..."` string; the scanner tracks quote state and depth.
+- **`alias_prefix`** — emits `alias` only when the next non-whitespace input isn't `of`. This separates `alias <expr>` (a value-creating prefix, used by `copy alias "X" to y`) from `alias of theItem` (still a plain property reference).
+
+### Remaining 10 errors
+
+Concentrated in four files, all caused by `command_parameter`'s `compound_name` value greedily spanning newlines into the next statement. Specifically, `with multiple selections allowed` parses as bare `with` + a value that then absorbs the next line's `if class of …` because AppleScript has no statement terminator and tree-sitter has no line-aware grammar primitives.
+
+**Attempted fix that didn't work:** a third external token (`compound_word`) that would match an identifier only when not a reserved keyword. Left in the git history (commit `5d907bf`) for anyone who wants to revisit. The trouble: too many keyword-like words (`down`, `option`, `up`, `front`, `back`) are valid property names in macOS app dictionaries — restricting them broke far more parses than it fixed.
+
+A real fix needs context-sensitive disambiguation of which `with X Y Z` patterns are single multi-word parameter names vs. `with <flag> <value>`. That requires either threading line/position state through the scanner or extending the parameter-name vocabulary to cover every documented Standard Additions parameter — both substantially more work than the rest of the roadmap combined.
 
 These don't affect highlighting outside the specific cascading line.
 
 ## Known limitations
 
-These are language constructs the grammar does not yet model, based on a complete pass through Apple's [AppleScript Language Guide](https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/introduction/ASLR_intro.html). Most are uncommon in real code; the impact today is that they parse as a sequence of separate identifiers rather than a single structured node, which means highlighting is "OK but not great" rather than wrong.
+After a complete audit against Apple's [AppleScript Language Guide](https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/introduction/ASLR_intro.html), the following constructs are documented language features the grammar does **not** yet model.
 
-### Block-level constructs
+### Tractable (purely additive, no scanner work needed)
 
-- **`with transaction [<session>] … end transaction`** — used to bundle multiple Apple events as one atomic operation. Currently parses as `with` + identifier + body, not as a transaction block.
-- **`but ignoring …` / `but considering …` modifier** inside `considering` / `ignoring` blocks. Example: `considering case but ignoring white space`. The `but` clause is dropped.
-- **`numeric strings`** and **`expansion`** text attributes inside `considering` / `ignoring`. Useful: `considering numeric strings` enables version-string comparison.
-- **`idle` handler** (`on idle … end idle` returning an interval) — parses as a regular handler, no special semantics, but the return-an-interval contract is invisible to the grammar.
+- **`idle` handler return-interval semantics** (`on idle … return N … end idle`) — parses as a regular handler; the contract that the return value is the next-wake interval isn't surfaced structurally.
+- **`continuing <command>` flow** — `continue <command_call>` parses as a `continue_statement` but the command body that follows isn't bound into it.
+- **Deprecated keywords** `returning` (alt for `to` in handler defs) and `put` / `put into` (alt for `copy`). Skipped because they're rare and would risk grammar churn for no real-world benefit.
 
-### Reference & operator forms
+### Needs an external C scanner (substantial)
 
 - **Pipe-delimited identifiers** (`|My Identifier|`) — AppleScript's escape syntax for identifiers with spaces or reserved-word collisions. Currently the `|` characters break the parse.
-- **Relative reference forms** `before` / `after` / `in front of` / `in back of` / `behind` as binary operators on element refs (e.g., `word before word 2`). Currently `before` is parsed as an `element_type`.
-- **`its` reference** — like `it` but used in property chains (`its name`). Currently parses as a plain identifier.
-- **Ordinal-suffix numbers** `1st`, `2nd`, `3rd`, `11th` — equivalent to `first`, `second`, etc. Currently parses as `number + identifier`.
+- **Multi-line `compound_name` cascade** — `command_parameter`'s `compound_name` value greedily spans newlines into the next statement (the cause of the 10 remaining corpus errors). Documented above under "Real-world coverage".
+- **`to <ident>` ambiguity** inside expression bodies — `move X to trash` vs `to handlerName()`. GLR keeps both alive and picks handler-def in cascade cases. Would need a column-aware scanner.
 
-### Date/time arithmetic and constants
+### Intentionally not modeled
 
-- **Time-unit constants** `seconds`, `minutes`, `hours`, `days`, `weeks` — used in date arithmetic (`current date + 5 * days`). Currently parses as plain identifiers, so the arithmetic structure parses but the units don't highlight as constants.
-- **Day-of-week constants** `Monday` through `Sunday` — special enum values. Parse as identifiers.
-- **Month constants** `January` through `December` — same.
-- **AppleScript built-in constants** `pi`, `space`, `tab`, `return`, `linefeed`, `quote`, `null` — parse as identifiers (semantically a no-op, but they should highlight as `@constant.builtin`).
-
-### Deprecated / short-form keywords
-
-These compile in AppleScript but aren't recognized as keywords:
-- **`returning`** — deprecated synonym for `to` in handler definitions
-- **`put`** / **`put into`** — deprecated synonym for `copy`
-- **`prop`** — short form of `property`
-- **`ref`** — short form of `reference`
-
-### Operator synonyms still to surface
-
-The grammar already recognizes the most common forms (`is`, `is not`, `contains`, `starts with`, etc.). Less-common synonyms documented in the language guide but not all wired up:
-
-- `equal` / `equals` / `equal to` / `is equal to` (we have `is equal to`, `equals`)
-- `doesn't equal` / `does not equal` / `is not equal` (we have `is not equal to`)
-- `doesn't come before` / `doesn't come after` (we have `comes before` / `comes after`)
-- `is contained by` / `is not contained by` / `isn't contained by` (we have `contains` / `does not contain`)
-
-### `use` statement extensions
-
-The basic forms work (`use framework "X"`, `use scripting additions`, `use AppleScript version "X"`, `use application "X"`). Less-common variants:
-
-- **Aliased binding**: `use Safari: application "Safari"` — the `name:` aliasing prefix
-- **Version + importing clauses**: `use application "X" version "7.0" without importing`
-- **Script-library imports**: `use script "My Library"` — currently parses, but no library-specific semantics
-
-### `continuing` clause
-
-A handler can defer to the next handler in the chain with `continue <command>`. The continuation form is parsed as a `continue_statement` but the command body that follows isn't structured as part of it.
-
-### Fundamental tree-sitter limits
-
-Two limitations need an external C scanner to fix, not just grammar rules:
-
-- **Block comments don't recognize strings.** `(* … "*)" … *)` closes the comment at the first `*)` even when it's inside a string literal. The regex-based comment tokenizer can't track quote state.
-- **`alias` keyword vs property name ambiguity.** `alias "Path"` (prefix) and `alias of theItem` (property) need context-sensitive lexing to disambiguate. GLR can't do it cleanly without a major restructure.
+- **AppleScript Studio** (deprecated since 2011, removed from Xcode) — `on clicked theObject`, `tell window "Main"`, `call method ... of class ...`. Some legacy scripts still use it; we don't.
+- **Smart curly quotes inside source** (`"…"` vs `"…"`) — `osadecompile` always emits straight quotes; documented as accept-on-demand.
+- **`.scptd` script bundles** — these are macOS packages, not files; Zed opens them as folders.
+- **Multi-word application-dictionary constants we haven't whitelisted** — e.g. `Eight channel`, `RGB`, `CMYK` inside `using terms from`. These parse as separate identifiers (visually correct enough for highlighting); the only way to make tree-sitter resolve them to single constants is to embed every app's `.sdef` dictionary into the grammar, which isn't practical.
 
 ## Roadmap
 
-In rough priority order (highest impact / lowest effort first):
+Tracked in rough priority order. Items 1–5 below have all landed; items 6–7 are what's left.
 
-1. **Quick wins (purely additive, no precedence work):** ✅ done
-   - ✅ `with transaction` block
-   - ✅ `numeric strings`, `expansion` to `text_attribute`
-   - ✅ `but considering` / `but ignoring` clauses
-   - ✅ AppleScript built-in constants (`pi`, `space`, `tab`, `linefeed`, `quote`) — `return` excluded to avoid lexer collision with the return statement keyword
-   - ✅ Day-of-week (`Monday`–`Sunday`) and month (`January`–`December`) names
-   - ✅ Time-unit constants (`seconds`, `minutes`, `hours`, `days`, `weeks`)
+1. **Quick wins** ✅
+   - `with transaction` block
+   - `numeric strings`, `expansion` text attributes
+   - `but considering` / `but ignoring` clauses
+   - AppleScript built-in constants (`pi`, `space`, `tab`, `linefeed`, `quote`)
+   - Day-of-week + month constants, time-unit constants (`seconds`–`weeks`)
 
-2. **Operator polish:** ✅ done
-   - ✅ Operator synonyms (`equal`, `equals`, `equal to`, `is equal to`; `isn't equal to`, `does not equal`, `doesn't equal`; `is contained by`, `isn't contained by`; `doesn't come before` / `doesn't come after`; `start with` / `begin with` / `end with` singular)
-   - ✅ Deprecated short forms: `prop` (alias for `property`), `ref` (alias for `reference`)
-   - ❌ `returning`, `put` — context-specific and rare; skipped to avoid grammar churn
+2. **Operator polish** ✅
+   - Full comparison synonym table from the Language Guide
+   - Short forms `prop`, `ref`
 
-3. **Idiomatic AppleScript:**
-   - ✅ `its_reference` as a distinct special reference (separate from `it`)
-   - ✅ Ordinal-suffix numbers (`1st`, `2nd`, `23rd`, `101st`)
-   - ⏳ `idle` handler with explicit return-interval semantics — parses generically today; specific structure not yet modeled
+3. **Idiomatic AppleScript** ✅ (partial)
+   - `its_reference` as a distinct reference
+   - Ordinal-suffix numbers (`1st`, `2nd`, `23rd`)
+   - ⏳ `idle` handler with explicit return-interval semantics
 
-4. **Reference forms:**
-   - ✅ Relative reference forms (`before`, `after`, `behind`, `in front of`, `in back of`) as expression atoms — parses cleanly in expression position; binding into command parameters still subject to the `to`/handler-def ambiguity from item 7
-   - ⏳ Pipe-delimited identifiers (`|name with spaces|`) — needs a new token rule
+4. **Reference forms** ✅ (partial)
+   - Relative reference forms (`before`, `after`, `behind`, `in front of`, `in back of`)
+   - ⏳ Pipe-delimited identifiers (`|name with spaces|`) — needs an external scanner token
 
-5. **`use` statement extensions:** ✅ done
-   - ✅ Aliased binding (`use Safari: application "Safari"`)
-   - ✅ `version "X"` clause
-   - ✅ `with importing` / `without importing` clauses
-   - ✅ `use script "Library"` form
+5. **`use` statement extensions** ✅
+   - Aliased binding, `version` clause, `with importing` / `without importing`, `use script "X"`
 
-6. **`continuing` flow:**
-   - ⏳ `continue <command_call>` as a structured statement (currently parses as `continue_statement` + orphan command tokens)
+6. **`continuing` flow** ⏳
+   - `continue <command_call>` as a structured statement
 
-7. **External scanner (large project, defers indefinitely):**
-   - Quote-aware block comments — affects `comment_tags.applescript`
-   - Context-sensitive `alias` keyword — affects `attach_folder_action.applescript`
-   - Context-sensitive `to` (`move X to Y` vs `to handlerName()`) — affects `colorsync_extract.applescript` and `remove_folder_actions.applescript`
-   - Would also enable AppleScript Studio support (`on clicked theObject`, `tell window "Main"`) and JXA detection in `run script "…"` injections
+7. **External scanner** ✅ (partial — see `src/scanner.c`)
+   - ✅ Quote-aware block comments (fixed 3 corpus errors)
+   - ✅ Context-sensitive `alias` keyword (fixed 2 corpus errors)
+   - ⏳ Multi-line `compound_name` cascade — needs more design work; one prototype (commit `5d907bf`) didn't work
+   - ⏳ Context-sensitive `to` ambiguity — same family
+   - ⏳ Pipe-delimited identifiers
+   - Would also enable AppleScript Studio support (`on clicked theObject`) and JXA detection in `run script "…"` injections
 
-8. **Intentionally out of scope:**
-   - **Language server features** (completion, hover, go-to-def, diagnostics, rename, formatting) — no maintained AppleScript LSP exists; building one from scratch is its own multi-month project.
+8. **Intentionally out of scope**
+   - **Language server features** (completion, hover, go-to-def, diagnostics, rename, formatting) — no maintained AppleScript LSP exists.
    - **Debugger (DAP)** — no AppleScript debugger exists outside Script Editor / Script Debugger.
-   - **`.scptd` script bundles** — these are macOS packages, not files; Zed opens them as folders.
-   - **JavaScript for Automation (JXA)** — a separate language that targets the same Apple-event APIs; would need its own grammar.
+   - **`.scptd` script bundles** — macOS packages, not files; Zed opens them as folders.
+   - **JavaScript for Automation (JXA)** — a separate language; would need its own grammar.
 
-For anyone picking up the remaining items, [`docs/references/`](docs/references/) caches the authoritative documentation (Apple Language Guide, tree-sitter authoring docs, Zed extension docs, external-scanner reference) so the next change can be made without round-tripping through the web.
+[`docs/references/`](docs/references/) caches all the authoritative source material (Apple Language Guide, tree-sitter authoring docs, Zed extension docs, external-scanner reference, [`docs/references/external-scanner/01-scanner-c.md`](docs/references/external-scanner/01-scanner-c.md) for the C-side TSLexer interface) so any future contributor can extend the grammar without round-tripping through the web.
 
 ## Installation
 
