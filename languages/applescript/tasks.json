@@ -6,9 +6,12 @@
     "tags": ["applescript-script"]
   },
   {
-    "label": "Run handler",
-    "command": "osascript",
-    "args": ["$ZED_FILE"],
+    "label": "Run handler $ZED_SYMBOL",
+    "command": "bash",
+    "args": [
+      "-c",
+      "T=$(mktemp -t zed-applescript-handler.XXXXXX).applescript; { cat \"$ZED_FILE\"; printf '\\n%s()\\n' \"$ZED_SYMBOL\"; } > \"$T\"; osascript \"$T\"; R=$?; rm -f \"$T\"; exit $R"
+    ],
     "tags": ["applescript-handler"]
   }
 ]

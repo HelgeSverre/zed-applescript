@@ -18,3 +18,11 @@
 (tell_block
   (reference
     (string) @context)) @item
+
+; ObjC-style handler defs aren't a separate node — they're handler_definitions
+; with selector-like names. They're already captured by the rule above.
+
+; `use` imports at top of file appear in outline so the reader can see what
+; the script depends on at a glance.
+(use_statement
+  (string) @name) @item

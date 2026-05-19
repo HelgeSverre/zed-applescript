@@ -5,3 +5,11 @@ line_comments = ["-- ", "# "]
 block_comment = ["(* ", " *)"]
 tab_size = 4
 hard_tabs = true
+first_line_pattern = '^#!.*\\bosascript\\b'
+
+brackets = [
+    { start = "(", end = ")", close = true, newline = true },
+    { start = "{", end = "}", close = true, newline = true },
+    { start = "(*", end = "*)", close = true, newline = false },
+    { start = "\"", end = "\"", close = true, newline = false, not_in = ["string", "comment"] },
+]

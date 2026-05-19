@@ -116,15 +116,40 @@
 (error_parameters
   (identifier) @variable.parameter)
 
-; Tell block target
+; Tell block target — `tell foo` (identifier) or `tell application "X"` (reference)
 (tell_block
   target: (identifier) @variable)
-(tell_simple_statement
-  target: (identifier) @variable)
+; tell_simple_statement target is always a `reference (keyword_application string)`,
+; which is already highlighted via the @keyword / @string rules above.
 
 ; Property references
 (property_reference
   (identifier) @property)
+
+; Possessive accessor: x's y — highlight the trailing identifier as a property
+(possessive_expression
+  (possessive) @punctuation.delimiter
+  (identifier) @property)
+
+; ObjC bridge method call: receiver's selector:arg [label:arg ...]
+(objc_selector_call
+  (possessive) @punctuation.delimiter
+  (identifier) @function.method)
+
+; `a reference to <expr>` keyword prefix is a single multi-word token; highlight
+; the wrapped expression node itself.
+(reference_to_expression) @variable.special
+
+; Date literal: `date "..."`
+(date_literal) @constant.builtin
+
+; `new <element_type>` used as the argument to `make`
+(new_specifier
+  (element_type) @type)
+
+; `whose`/`where` filter clause on object specifiers — the keyword is a hidden
+; token inside whose_clause; highlight the rule as control-flow.
+(whose_clause) @keyword.control
 
 ; General identifiers (fallback)
 (identifier) @variable
