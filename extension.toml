@@ -1,6 +1,6 @@
 id = "applescript"
 name = "AppleScript"
-version = "1.2.0"
+version = "1.3.0"
 schema_version = 1
 authors = ["Helge Sverre <helge.sverre@gmail.com>"]
 description = "AppleScript language support for Zed"
@@ -8,4 +8,4 @@ repository = "https://github.com/HelgeSverre/zed-applescript"
 
 [grammars.applescript]
 repository = "https://github.com/HelgeSverre/tree-sitter-applescript"
-commit = "cdbdc1c91d04dd1bde17ef19b52b4fbb29e622d8"
+commit = "10d0c9edcca0f3a47a425e2f8e22a0f44956cda5"

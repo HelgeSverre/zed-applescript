@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0]
+
+### Added
+
+- **Pipe-delimited identifiers** (`|name with spaces|`): an external scanner token recognises the AppleScript form for identifiers containing spaces, apostrophes, or words that would otherwise look reserved (`|class|`, `|set|`). Accepted everywhere an identifier slot exists — as an expression, as set/copy targets, in parameter lists, property declarations, global/local declarations, error parameter clauses, and compound names. Handler names intentionally stay plain.
+- `highlights.scm` captures `(piped_identifier)` as `@variable` so piped identifiers get the same color as plain ones.
+
+### Changed
+
+- Grammar pin bumped to `10d0c9e` (piped identifiers external scanner token). 89/89 fixture tests pass.
+
 ## [1.2.0]
 
 ### Added

@@ -144,7 +144,7 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 
 ## Roadmap
 
-**Status: maintenance mode as of v1.2.0.** All editor surfaces are wired, the active 32-file real-world corpus parses with 0 ERROR + 0 MISSING, and the remaining items below all share a single primitive (a column-aware external scanner) that's already been attempted unsuccessfully under LLM-driven edits. AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
+**Status: maintenance mode as of v1.3.0.** All editor surfaces are wired, the active 32-file real-world corpus parses with 0 ERROR + 0 MISSING, and the remaining items below all share a single primitive (a column-aware external scanner) that's already been attempted unsuccessfully under LLM-driven edits. AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
 
 ### Done
 
@@ -155,10 +155,10 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 - **`use` statement extensions**: aliased binding, `version` clause, `with importing` / `without importing`, `use script "X"`.
 - **External scanner** (`src/scanner.c`): quote-aware block comments; context-sensitive `alias` keyword.
 - **v1.2 additions**: `idle` handler (corpus-locked); `continue <command>` delegation; JXA detection in `run script "…"` injections (switches injected language between `applescript` and `javascript` based on JS-shaped tokens in the string body).
+- **v1.3.0 addition**: pipe-delimited identifiers (`|name with spaces|`) — external scanner token, accepted everywhere an identifier slot exists.
 
 ### Deferred — needs external-scanner work, not LLM-driven
 
-- **Pipe-delimited identifiers** (`|name with spaces|`) — bounded external-scanner token. Doable as a focused session; the only roadmap item with real language-completeness value.
 - **Multi-line `compound_name` cascade** — needs column-aware lexing. Multiple LLM-driven attempts reverted; deferred until a human-driven session.
 - **Context-sensitive `to` ambiguity** — same column-aware-lexing primitive as above.
 
