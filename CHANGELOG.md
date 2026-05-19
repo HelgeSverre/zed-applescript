@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0]
+
+### Fixed
+
+- **Multi-word grammar tokens no longer glue across newlines.** Every `/\s+/` inside a `token(...)` definition was matching newlines, so multi-word names (`default answer`, `with multiple selections allowed`, `path to home folder`, `adding folder items to`, etc.) greedily stitched the next indented line into the current statement. Replaced 133 occurrences with `/[ \t]+/`. Tokens are now bounded to a single physical line.
+- Bonus: `test/corpus/realworld/known-limits/comment_tags.applescript` now parses cleanly (was previously 2 ERRORs from a post-block-comment cascade rooted in this same gluing). Moved to `edge_cases/`. Active corpus is **34/34** with 0 ERROR + 0 MISSING.
+
+### Changed
+
+- Grammar pin bumped to `c20c217` (first 7 chars of new pin).
+- `known-limits/README.md`: 2 files remaining (was 3); `comment_tags.applescript` listed under "Resolved".
+
+### Known trade-off
+
+- Multi-word names split with the line-continuation glyph `¬` *inside the name itself* (e.g. `default ¬\n   answer` as a single `parameter_name`) will no longer match. Users typically place `¬` between higher-level constructs (between parameters, not inside a multi-word parameter name), so this case is extremely rare. If it ever surfaces in real corpus, the fix is to widen the in-token whitespace class to `[ \t¬]+`.
+
+### Not fixed in this release
+
+- Rule-level cross-newline attach of `command_parameter` (e.g. `display dialog "X"\n    default answer ""` still binds the second line back as a parameter). This is a separate concern from the token gluing and is documented inline in `grammar.js` above the `command_parameter` rule.
+- Two files remain in `known-limits/` (`attach_folder_action.applescript`, `remove_folder_actions.applescript`) — both hit the outer-`if`-block-terminator cascade, which is unrelated to multi-word token gluing.
+
 ## [1.4.0]
 
 ### Added
