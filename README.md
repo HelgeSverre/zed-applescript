@@ -144,47 +144,39 @@ After a complete audit against Apple's [AppleScript Language Guide](https://deve
 
 ## Roadmap
 
-Tracked in rough priority order. Items 1–5 below have all landed; items 6–7 are what's left.
+**Status: maintenance mode as of v1.1.2.** All editor surfaces are wired, the active 32-file real-world corpus parses with 0 ERROR + 0 MISSING, and the remaining items below are either small on-demand polish or hit known parser limitations that need focused human work on the external scanner. AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
 
-1. **Quick wins** ✅
-   - `with transaction` block
-   - `numeric strings`, `expansion` text attributes
-   - `but considering` / `but ignoring` clauses
-   - AppleScript built-in constants (`pi`, `space`, `tab`, `linefeed`, `quote`)
-   - Day-of-week + month constants, time-unit constants (`seconds`–`weeks`)
+### Done
 
-2. **Operator polish** ✅
-   - Full comparison synonym table from the Language Guide
-   - Short forms `prop`, `ref`
+- **Quick wins**: `with transaction`, `numeric strings` / `expansion` attributes, `but considering` / `but ignoring`, AppleScript constants (`pi`, `space`, `tab`, `linefeed`, `quote`), weekday/month constants, time-unit constants.
+- **Operator polish**: full comparison synonym table; short forms `prop`, `ref`.
+- **Idiomatic AppleScript**: `its` reference, ordinal-suffix numbers (`1st`, `2nd`, `23rd`).
+- **Reference forms**: `before`, `after`, `behind`, `in front of`, `in back of`.
+- **`use` statement extensions**: aliased binding, `version` clause, `with importing` / `without importing`, `use script "X"`.
+- **External scanner** (`src/scanner.c`): quote-aware block comments; context-sensitive `alias` keyword.
 
-3. **Idiomatic AppleScript** ✅ (partial)
-   - `its_reference` as a distinct reference
-   - Ordinal-suffix numbers (`1st`, `2nd`, `23rd`)
-   - ⏳ `idle` handler with explicit return-interval semantics
+### Candidates for v1.2 (small, low-risk, ship if a user asks)
 
-4. **Reference forms** ✅ (partial)
-   - Relative reference forms (`before`, `after`, `behind`, `in front of`, `in back of`)
-   - ⏳ Pipe-delimited identifiers (`|name with spaces|`) — needs an external scanner token
+- **`idle` handler** with explicit return-interval semantics.
+- **`continuing <command>`** flow keyword as a structured statement.
+- **JXA detection in `run script "…"` injections** (when the literal looks like JS, inject `javascript` instead of `applescript`).
 
-5. **`use` statement extensions** ✅
-   - Aliased binding, `version` clause, `with importing` / `without importing`, `use script "X"`
+### Deferred — needs external-scanner work, not LLM-driven
 
-6. **`continuing` flow** ⏳
-   - `continue <command_call>` as a structured statement
+- **Pipe-delimited identifiers** (`|name with spaces|`) — bounded external-scanner token. Doable as a focused session; the only roadmap item with real language-completeness value.
+- **Multi-line `compound_name` cascade** — needs column-aware lexing. Multiple LLM-driven attempts reverted; deferred until a human-driven session.
+- **Context-sensitive `to` ambiguity** — same column-aware-lexing primitive as above.
 
-7. **External scanner** ✅ (partial — see `src/scanner.c`)
-   - ✅ Quote-aware block comments (fixed 3 corpus errors)
-   - ✅ Context-sensitive `alias` keyword (fixed 2 corpus errors)
-   - ⏳ Multi-line `compound_name` cascade — needs more design work; one prototype (commit `5d907bf`) didn't work
-   - ⏳ Context-sensitive `to` ambiguity — same family
-   - ⏳ Pipe-delimited identifiers
-   - Would also enable AppleScript Studio support (`on clicked theObject`) and JXA detection in `run script "…"` injections
+All three of these share the column-aware-scanner primitive; landing it would also unlock the four files in `test/corpus/realworld/known-limits/` and (if anyone still cares) AppleScript Studio support.
 
-8. **Intentionally out of scope**
-   - **Language server features** (completion, hover, go-to-def, diagnostics, rename, formatting) — no maintained AppleScript LSP exists.
-   - **Debugger (DAP)** — no AppleScript debugger exists outside Script Editor / Script Debugger.
-   - **`.scptd` script bundles** — macOS packages, not files; Zed opens them as folders.
-   - **JavaScript for Automation (JXA)** — a separate language; would need its own grammar.
+### Out of scope
+
+- **Language-server features** (completion, hover, go-to-def, diagnostics, rename, formatting) — no maintained AppleScript LSP exists.
+- **Debugger (DAP)** — no AppleScript debugger exists outside Script Editor / Script Debugger.
+- **AppleScript Studio** — deprecated by Apple in 2011, removed from Xcode; no realistic user base.
+- **`.scptd` script bundles** — macOS packages, not files; Zed opens them as folders.
+- **JavaScript for Automation (JXA) as its own language** — would need a separate grammar.
+- **`if cond then <command_call>` one-liner** — known parser gap; supported one-line tails are `return`, `exit`, `continue`, `error`, `log`. Use the block form (`if cond then\n  command\nend if`) for command calls.
 
 [`docs/references/`](docs/references/) caches all the authoritative source material (Apple Language Guide, tree-sitter authoring docs, Zed extension docs, external-scanner reference, [`docs/references/external-scanner/01-scanner-c.md`](docs/references/external-scanner/01-scanner-c.md) for the C-side TSLexer interface) so any future contributor can extend the grammar without round-tripping through the web.
 

@@ -11,8 +11,9 @@ A Zed editor extension providing AppleScript language support. The extension its
 - `extension.toml` — Zed extension manifest. The `[grammars.applescript]` block pins the grammar repo (`HelgeSverre/tree-sitter-applescript`) to a specific `commit` SHA. Zed fetches and builds the grammar from that pin; the submodule is for local development only.
 - `languages/applescript/` — Zed query files (`highlights.scm`, `indents.scm`, `outline.scm`, `brackets.scm`, `textobjects.scm`, `runnables.scm`) and `config.toml` (file extensions, comment syntax, indentation). These queries target node names produced by the pinned grammar — if a query references a node the grammar doesn't emit, highlighting/outline silently breaks.
 - `grammars/tree-sitter-applescript/` — git submodule for the grammar source. Used to regenerate the parser and test queries locally; **not shipped** with the extension.
-- `tree-sitter-applescript-old/` — legacy in-tree grammar kept for reference. Do not edit; the submodule is the source of truth.
 - `justfile` — task runner with all common workflows.
+
+Note: `AGENTS.md` is a symlink to this file so Codex and other agents pick up the same instructions.
 
 ## Common commands
 

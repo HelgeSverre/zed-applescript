@@ -1,5 +1,7 @@
 # Goal: Full AppleScript support in the Zed extension
 
+**STATUS: completed 2026-05-19.** All six success criteria met (32/32 active corpus at 0 ERROR + 0 MISSING; 4 files documented in `known-limits/`). Remaining roadmap items are tracked in `README.md`, not here. This file is kept as a historical artifact — do NOT re-run autonomously.
+
 ## End state
 
 A user opening any real-world AppleScript file in Zed gets:
