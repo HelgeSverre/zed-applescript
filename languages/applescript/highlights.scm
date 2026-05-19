@@ -13,6 +13,7 @@
 (missing_value) @constant.builtin
 (null_value) @constant.builtin
 (current_application) @constant.builtin
+(applescript_constant) @constant.builtin
 (me_reference) @variable.special
 (it_reference) @variable.special
 (result_reference) @variable.special
@@ -59,6 +60,7 @@
 (keyword_considering) @keyword.control
 (keyword_ignoring) @keyword.control
 (keyword_with_timeout) @keyword.control
+(keyword_with_transaction) @keyword.control
 (keyword_using_terms_from) @keyword.control
 
 ; Script keyword

@@ -23,4 +23,5 @@
 (considering_block) @function.around
 (ignoring_block) @function.around
 (timeout_block) @function.around
+(transaction_block) @function.around
 (using_terms_block) @function.around

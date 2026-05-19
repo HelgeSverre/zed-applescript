@@ -106,6 +106,110 @@ The grammar is exercised against a corpus of real AppleScript files under [`gram
 
 These don't affect highlighting outside the specific cascading line.
 
+## Known limitations
+
+These are language constructs the grammar does not yet model, based on a complete pass through Apple's [AppleScript Language Guide](https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/introduction/ASLR_intro.html). Most are uncommon in real code; the impact today is that they parse as a sequence of separate identifiers rather than a single structured node, which means highlighting is "OK but not great" rather than wrong.
+
+### Block-level constructs
+
+- **`with transaction [<session>] … end transaction`** — used to bundle multiple Apple events as one atomic operation. Currently parses as `with` + identifier + body, not as a transaction block.
+- **`but ignoring …` / `but considering …` modifier** inside `considering` / `ignoring` blocks. Example: `considering case but ignoring white space`. The `but` clause is dropped.
+- **`numeric strings`** and **`expansion`** text attributes inside `considering` / `ignoring`. Useful: `considering numeric strings` enables version-string comparison.
+- **`idle` handler** (`on idle … end idle` returning an interval) — parses as a regular handler, no special semantics, but the return-an-interval contract is invisible to the grammar.
+
+### Reference & operator forms
+
+- **Pipe-delimited identifiers** (`|My Identifier|`) — AppleScript's escape syntax for identifiers with spaces or reserved-word collisions. Currently the `|` characters break the parse.
+- **Relative reference forms** `before` / `after` / `in front of` / `in back of` / `behind` as binary operators on element refs (e.g., `word before word 2`). Currently `before` is parsed as an `element_type`.
+- **`its` reference** — like `it` but used in property chains (`its name`). Currently parses as a plain identifier.
+- **Ordinal-suffix numbers** `1st`, `2nd`, `3rd`, `11th` — equivalent to `first`, `second`, etc. Currently parses as `number + identifier`.
+
+### Date/time arithmetic and constants
+
+- **Time-unit constants** `seconds`, `minutes`, `hours`, `days`, `weeks` — used in date arithmetic (`current date + 5 * days`). Currently parses as plain identifiers, so the arithmetic structure parses but the units don't highlight as constants.
+- **Day-of-week constants** `Monday` through `Sunday` — special enum values. Parse as identifiers.
+- **Month constants** `January` through `December` — same.
+- **AppleScript built-in constants** `pi`, `space`, `tab`, `return`, `linefeed`, `quote`, `null` — parse as identifiers (semantically a no-op, but they should highlight as `@constant.builtin`).
+
+### Deprecated / short-form keywords
+
+These compile in AppleScript but aren't recognized as keywords:
+- **`returning`** — deprecated synonym for `to` in handler definitions
+- **`put`** / **`put into`** — deprecated synonym for `copy`
+- **`prop`** — short form of `property`
+- **`ref`** — short form of `reference`
+
+### Operator synonyms still to surface
+
+The grammar already recognizes the most common forms (`is`, `is not`, `contains`, `starts with`, etc.). Less-common synonyms documented in the language guide but not all wired up:
+
+- `equal` / `equals` / `equal to` / `is equal to` (we have `is equal to`, `equals`)
+- `doesn't equal` / `does not equal` / `is not equal` (we have `is not equal to`)
+- `doesn't come before` / `doesn't come after` (we have `comes before` / `comes after`)
+- `is contained by` / `is not contained by` / `isn't contained by` (we have `contains` / `does not contain`)
+
+### `use` statement extensions
+
+The basic forms work (`use framework "X"`, `use scripting additions`, `use AppleScript version "X"`, `use application "X"`). Less-common variants:
+
+- **Aliased binding**: `use Safari: application "Safari"` — the `name:` aliasing prefix
+- **Version + importing clauses**: `use application "X" version "7.0" without importing`
+- **Script-library imports**: `use script "My Library"` — currently parses, but no library-specific semantics
+
+### `continuing` clause
+
+A handler can defer to the next handler in the chain with `continue <command>`. The continuation form is parsed as a `continue_statement` but the command body that follows isn't structured as part of it.
+
+### Fundamental tree-sitter limits
+
+Two limitations need an external C scanner to fix, not just grammar rules:
+
+- **Block comments don't recognize strings.** `(* … "*)" … *)` closes the comment at the first `*)` even when it's inside a string literal. The regex-based comment tokenizer can't track quote state.
+- **`alias` keyword vs property name ambiguity.** `alias "Path"` (prefix) and `alias of theItem` (property) need context-sensitive lexing to disambiguate. GLR can't do it cleanly without a major restructure.
+
+## Roadmap
+
+In rough priority order (highest impact / lowest effort first):
+
+1. **Quick wins (purely additive, no precedence work):**
+   - Add `with transaction` block
+   - Add `numeric strings`, `expansion` to `text_attribute`
+   - Add `but considering` / `but ignoring` clauses
+   - Add AppleScript built-in constants (`pi`, `space`, `tab`, `return`, `linefeed`, `quote`, `null`) as named tokens for highlighting
+   - Add day-of-week and month names as named tokens
+   - Add time-unit constants (`seconds`, `minutes`, `hours`, `days`, `weeks`) as named tokens
+
+2. **Operator polish:**
+   - Add the operator synonyms listed above to `comparison_operator`
+   - Add deprecated keywords (`returning`, `put`, `prop`, `ref`) as named tokens so they don't masquerade as identifiers
+
+3. **Idiomatic AppleScript:**
+   - `its` as a special reference distinct from `it`
+   - Ordinal-suffix numbers (`1st`, `2nd`, …) as a literal form
+   - `idle` handler with explicit return-interval semantics
+
+4. **Reference forms:**
+   - Relative reference forms (`before X`, `after Y`, `in front of Z`, `in back of W`, `behind Q`)
+   - Pipe-delimited identifiers (`|name with spaces|`) — needs a new token rule
+
+5. **`use` statement extensions:**
+   - Aliased binding (`use X: application "Y"`)
+   - `version` and `with importing` / `without importing` clauses
+
+6. **`continuing` flow:**
+   - `continue <command_call>` as a structured statement
+
+7. **External scanner (large project, defers indefinitely):**
+   - Quote-aware block comments
+   - Context-sensitive `alias` keyword
+   - This would also enable AppleScript Studio support (`on clicked theObject`, `tell window "Main"` etc.) and JXA detection in `run script "…"` injections
+
+8. **Intentionally out of scope:**
+   - **Language server features** (completion, hover, go-to-def, diagnostics, rename, formatting) — no maintained AppleScript LSP exists; building one from scratch is its own multi-month project.
+   - **Debugger (DAP)** — no AppleScript debugger exists outside Script Editor / Script Debugger.
+   - **`.scptd` script bundles** — these are macOS packages, not files; Zed opens them as folders.
+   - **JavaScript for Automation (JXA)** — a separate language that targets the same Apple-event APIs; would need its own grammar.
+
 ## Installation
 
 1. Open Zed
