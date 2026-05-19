@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.1]
+
+### Added
+
+- **`just verify`** — regenerates the grammar and checks every node reference in `languages/applescript/*.scm` against the freshly-generated `src/node-types.json`. Fails on unknown nodes. Wired into `just release` as a pre-tag gate so silent `.scm`/grammar drift can't ship.
+
+### Fixed
+
+- Removed dead `(escape_sequence) @string.escape` query — the rule was unused in `grammar.js` (since `string` was made opaque), so tree-sitter had been stripping it from the generated parser. The query had been a silent no-op. Grammar pin bumped to `1d74fe0` (orphan rule deleted).
+- `.gitignore` now excludes `grammars/applescript/`, the Zed dev-extension runtime artifact that was repeatedly sneaking back in as a duplicate gitlink via `git add -A`.
+
 ## [1.7.0]
 
 ### Added
