@@ -27,7 +27,7 @@ AppleScript language support for the [Zed](https://zed.dev) editor.
 | Code outline | ✅ | Handlers (with parameters), `script` objects, properties, `tell` block targets |
 | Vim text objects | ✅ | `@function` (handlers, `tell`, `if`, `repeat`, `try`, etc.), `@class` (script objects), `@comment` |
 | Run script (whole file) | ✅ | Gutter run button → `osascript $ZED_FILE` |
-| Run individual handler | ✅ | Gutter run button per handler — invokes just the handler by appending `<handler>()` to the file content in a temp script |
+| Run individual handler | ⚠️ | Gutter run button per handler — invokes the handler by appending `<handler>()` to a temp copy of the file. **Zero-arg handlers only.** The top-level script body still runs before the appended call. |
 | Auto-closing brackets / quotes | ✅ | `()`, `{}`, `(* *)`, `""` auto-close via `config.toml` brackets array |
 | Shebang detection (`#!/usr/bin/osascript`) | ✅ | `first_line_pattern` in `config.toml` |
 | Language injections | ✅ | Bash highlighting inside `do shell script "…"`; recursive AppleScript inside `run script "…"` |
