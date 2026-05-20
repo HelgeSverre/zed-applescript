@@ -85,6 +85,34 @@ install-via-ui:
     @echo "  2. cmd-shift-P → 'zed: install dev extension'"
     @echo "  3. Pick this directory: $(pwd)"
 
+# Show extension version, grammar pin, last tag, and working-tree status
+[macos]
+status:
+    #!/usr/bin/env bash
+    set -e
+
+    VER=$(grep '^version' extension.toml | sed 's/^version = "\(.*\)"/\1/')
+    PIN=$(grep '^commit' extension.toml | sed 's/^commit = "\(.*\)"/\1/')
+    TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "(none)")
+    HEAD=$(git rev-parse --short HEAD)
+    DIRTY=$(git status --porcelain | wc -l | tr -d ' ')
+    SUB_PIN_SHORT=${PIN:0:7}
+    SUB_HEAD=$(cd grammars/tree-sitter-applescript && git rev-parse HEAD)
+    SUB_HEAD_SHORT=${SUB_HEAD:0:7}
+
+    if [ "$PIN" = "$SUB_HEAD" ]; then
+        SUB_SYNC="✓ matches pin"
+    else
+        SUB_SYNC="⚠ submodule at $SUB_HEAD_SHORT, pin is $SUB_PIN_SHORT (run \`just update-grammar\` or check out the pinned SHA)"
+    fi
+
+    printf "extension version : %s\n" "$VER"
+    printf "extension HEAD    : %s\n" "$HEAD"
+    printf "last tag          : %s\n" "$TAG"
+    printf "grammar pin       : %s\n" "$PIN"
+    printf "submodule         : %s\n" "$SUB_SYNC"
+    printf "working tree      : %s file(s) changed\n" "$DIRTY"
+
 # === Release ===
 
 # Update submodule to latest and rewrite the commit pin in extension.toml

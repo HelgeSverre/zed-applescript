@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.4]
+
+Polish pass — four small additions, no behavior changes for end users.
+
+### Added
+
+- **CI on the grammar repo** at [HelgeSverre/tree-sitter-applescript](https://github.com/HelgeSverre/tree-sitter-applescript/actions). Runs the fixture suite + a real-world corpus scan on every push and PR to grammar `main`. Catches regressions before they leave the grammar repo, so a broken grammar can't silently slip in via the next `just update-grammar` here.
+- **`just status`** recipe — prints version, grammar pin, last tag, and whether the submodule SHA matches the pin (with a `⚠` if it doesn't). Useful when context-switching back to the repo.
+- **README badges** for CI status, latest version, and license.
+
+### Changed
+
+- README's `Documentation` section now lists only user-facing material (CHANGELOG, the references cache). Moved `CLAUDE.md` into a new `Contributing` section since it's a repo-internal contract for AI agents, not user-facing documentation.
+- Grammar pin bumped to `0083acc` to pick up the new CI workflow on the grammar side. No parser change.
+
 ## [1.8.3]
 
 Eight findings from a five-lens swarm review applied as a single batch.

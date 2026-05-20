@@ -1,5 +1,9 @@
 # AppleScript for Zed
 
+[![CI](https://img.shields.io/github/actions/workflow/status/HelgeSverre/zed-applescript/ci.yml?branch=main&logo=github&label=CI)](https://github.com/HelgeSverre/zed-applescript/actions/workflows/ci.yml)
+[![Latest version](https://img.shields.io/github/v/tag/HelgeSverre/zed-applescript?label=version)](https://github.com/HelgeSverre/zed-applescript/releases/latest)
+[![License](https://img.shields.io/github/license/HelgeSverre/zed-applescript)](LICENSE.md)
+
 AppleScript language support for the [Zed](https://zed.dev) editor.
 
 ## Install
@@ -115,5 +119,9 @@ For a fresh contributor who'd rather have Zed compile the extension via its own 
 ## Documentation
 
 - [`CHANGELOG.md`](CHANGELOG.md) — version history and per-release notes.
-- [`CLAUDE.md`](CLAUDE.md) — guidance for AI coding agents working in this repo (also picked up by Codex via `AGENTS.md` symlink).
-- [`docs/references/`](docs/references/) — cached upstream documentation (Apple's AppleScript Language Guide, tree-sitter authoring docs, Zed extension docs, external-scanner reference).
+- [`docs/references/`](docs/references/) — cached upstream documentation (Apple's AppleScript Language Guide, tree-sitter authoring docs, Zed extension docs, external-scanner reference). Useful when extending the grammar.
+
+## Contributing
+
+- [`CLAUDE.md`](CLAUDE.md) — repo-internal contract for AI coding agents (and any human who wants the same context). Covers the release process, what `just update-grammar` actually does, and the grammar ↔ extension coupling. `AGENTS.md` is a symlink to this file so Codex picks it up too.
+- The `just` recipes — run `just --list` for the full set, or `just status` for a quick health snapshot (current version, grammar pin, submodule sync state).
