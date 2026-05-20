@@ -174,7 +174,7 @@ release version:
     #!/usr/bin/env bash
     set -e
 
-    sed -i '' "s/^version = \".*\"/version = \"{{version}}\"/" extension.toml
+    sed -i '' "s/^version = \".*\"/version = \"{{ version }}\"/" extension.toml
 
     just update-grammar
     just verify
@@ -185,11 +185,11 @@ release version:
     # `update-grammar`; if a release also touches CHANGELOG.md or other
     # files, add them by name above this commit step.
     git add extension.toml grammars/tree-sitter-applescript CHANGELOG.md
-    git commit -m "Release v{{version}}"
-    git tag -a "v{{version}}" -m "Release v{{version}}"
+    git commit -m "Release v{{ version }}"
+    git tag -a "v{{ version }}" -m "Release v{{ version }}"
 
     echo ""
-    echo "Release v{{version}} prepared. Run 'just push' to publish."
+    echo "Release v{{ version }} prepared. Run 'just push' to publish."
 
 # Push main + tags
 push:
