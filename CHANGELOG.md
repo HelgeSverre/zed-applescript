@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.3]
+
+Eight findings from a five-lens swarm review applied as a single batch.
+
+### Fixed
+
+- **`$ZED_SYMBOL` no longer flows into a `bash -c` string** in the "Run handler" task. It's now passed as an environment variable (`HANDLER`) and read as a normal shell variable, eliminating the textual-injection risk a maliciously named handler could otherwise exploit. (Security audit.)
+- **`mktemp` leak in the handler task closed.** The previous one-liner appended `.applescript` to `$(mktemp …)`, leaving the original temp file un-deleted on every run. Now uses `mktemp` + `mv` + `trap … EXIT` for guaranteed cleanup. (Code review.)
+- **`runnables.scm` handler-name capture renamed `@_name` → `@name`** so Zed actually populates `$ZED_SYMBOL` in the task label. The leading-underscore convention marks a capture as internal/unused, which on some Zed builds suppressed the substitution silently. (Code review.)
+- **`just test` no longer truncates its output** with `| tail -3`. CI failures now show which fixture broke and the diff, not just the summary count. (Code review.)
+- **`just release` uses explicit `git add` paths** (`extension.toml`, `grammars/tree-sitter-applescript`, `CHANGELOG.md`) instead of `git add -A`, so a release commit can't sweep in stray local files. (Security audit.)
+- **`tree-sitter-cli@0.22` pinned in CI** (`ci.yml` + `release.yml`). The previous unpinned `npm install -g tree-sitter-cli` would have broken silently on a major-version bump. (Maintenance forecast.)
+
+### Added
+
+- **Comment language injection** (`injections.scm`): both `(comment)` and `(block_comment)` now inject Zed's `comment` pseudo-language, activating built-in TODO/FIXME/NOTE/HACK gutter highlighting. (Comparative analysis vs Dart/Haskell/Lua.)
+- **GitHub topics** on the extension repo (`zed-editor`, `zed-extension`, `osascript`, `automation`, `tree-sitter`, `macos`, `applescript`, `zed`) and a clearer description that drops the misleading `(WIP)` prefix at v1.8.3. (Outside-skeptic review.)
+
 ## [1.8.2]
 
 ### Added

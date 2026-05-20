@@ -18,7 +18,9 @@ test:
     set -e
     cd grammars/tree-sitter-applescript
     echo "Running fixture suite..."
-    npx tree-sitter test 2>&1 | tail -3
+    # Full output, not truncated — a failing test prints the diff before
+    # the summary, and we want to see WHICH fixture broke when CI fails.
+    npx tree-sitter test
     echo ""
     echo "Smoke-parse:"
     echo 'set x to 5' | npx tree-sitter parse /dev/stdin
@@ -108,7 +110,12 @@ release version:
     just update-grammar
     just verify
 
-    git add -A
+    # Explicit paths only — `git add -A` would sweep in stray local
+    # files (notes, secrets, scratch buffers) into the release commit.
+    # The grammar submodule pointer and extension.toml are advanced by
+    # `update-grammar`; if a release also touches CHANGELOG.md or other
+    # files, add them by name above this commit step.
+    git add extension.toml grammars/tree-sitter-applescript CHANGELOG.md
     git commit -m "Release v{{version}}"
     git tag -a "v{{version}}" -m "Release v{{version}}"
 

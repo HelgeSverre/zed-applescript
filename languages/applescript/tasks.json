@@ -19,8 +19,11 @@
     "command": "bash",
     "args": [
       "-c",
-      "T=$(mktemp -t zed-applescript-handler.XXXXXX).applescript; { cat \"$ZED_FILE\"; printf '\\n%s()\\n' \"$ZED_SYMBOL\"; } > \"$T\"; osascript \"$T\"; R=$?; rm -f \"$T\"; exit $R"
+      "set -e; B=$(mktemp -t zed-applescript-handler) && mv \"$B\" \"$B.applescript\" && T=\"$B.applescript\"; trap 'rm -f \"$T\"' EXIT; { cat \"$ZED_FILE\"; printf '\\n%s()\\n' \"$HANDLER\"; } > \"$T\"; osascript \"$T\""
     ],
+    "env": {
+      "HANDLER": "$ZED_SYMBOL"
+    },
     "tags": ["applescript-handler"]
   }
 ]

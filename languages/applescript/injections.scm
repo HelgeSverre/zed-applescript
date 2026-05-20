@@ -1,4 +1,12 @@
-; Language injections — embed other languages inside AppleScript strings.
+; Language injections — embed other languages inside AppleScript code.
+
+; Inject the `comment` pseudo-language inside every comment so Zed's
+; built-in TODO/FIXME/NOTE/HACK gutter highlighting fires for AppleScript
+; sources. Covers both line (`--`, `#`) and block (`(* *)`) comment forms.
+((comment) @injection.content
+  (#set! injection.language "comment"))
+((block_comment) @injection.content
+  (#set! injection.language "comment"))
 
 ; `do shell script "..."` runs the string as a shell command. Inject bash
 ; into the string body so users get shell highlighting inside it.
