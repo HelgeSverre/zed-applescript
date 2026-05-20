@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0]
+
+Tier 1 grammar improvements — 5 small lenient parsing additions sourced from a three-agent stress-file analysis. **22 errors closed** across the quarantined stress targets.
+
+### Added (grammar)
+
+1. **Bare `#` line comments** alongside the existing `--` and `#!` forms. Common in shebang scripts and modern AppleScript style.
+2. **Leading-dot floats** (`.5`, `-.25`) — a number-literal form common in window-manager scripts that compute screen fractions.
+3. **Multi-word record key values** — `{repetition method: start after completion}`. Lenient editor parsing: not valid generic AppleScript per `osacompile`, only valid when the target app's dictionary defines those words as enumeration constants. AppleScript code that uses OmniFocus / Mail / Calendar / Contacts dictionaries does this routinely.
+4. **`|piped|()` no-arg handler calls** — supports ASObjC method-call syntax where the selector is a piped identifier.
+
+### Changed
+
+- **Time-unit names** (`seconds`, `minutes`, `hours`, `days`, `weeks`) removed from `applescript_constant`. They now parse as plain identifiers outside `with timeout` (which has its own dedicated `seconds` token). Lets `set hours of theDate to 12` and similar property-reference patterns parse correctly.
+- Grammar pin bumped to `7a5dce5`.
+
+### Stress-corpus impact
+
+| File | Before | After | Δ |
+|---|---:|---:|---:|
+| `omnifocus_library.applescript` | 29 | 19 | −10 |
+| `battery_monitor.applescript` | 12 | 6 | −6 |
+| `layouts.applescript` | 7 | 1 | −6 |
+| `alfred_iterm.applescript` | 10 | 10 | 0 (Tier 2: chained tells) |
+| `adium_unittest.applescript` | 11 | 11 | 0 (single-app dictionary, intentionally skipped) |
+
+Layouts is one error short of graduating to the active corpus; the remaining error (`tell application theApp` — a variable reference instead of a string literal) is on the Tier 2 list as part of broadening `tell_simple_statement.target` to `$._expression`.
+
+### Verified valid AppleScript
+
+The `just validate-corpus` recipe (added in `6117e9c`) confirms all 4 of the additions above target real-AppleScript constructs that `osacompile` accepts. Fix #3 (multi-word record values) is the one intentional lenient-mode case — the comment in `grammar.js` explains why.
+
 ## [1.8.5]
 
 Corpus expansion — 9 community-sourced scripts.
