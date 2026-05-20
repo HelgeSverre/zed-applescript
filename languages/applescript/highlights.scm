@@ -1,5 +1,6 @@
-; Comments
+; Comments — both `-- line` and `(* block *)` forms.
 (comment) @comment
+(block_comment) @comment
 
 ; Strings (string is a single opaque token; escape sequences inside are
 ; not modelled as separate nodes).

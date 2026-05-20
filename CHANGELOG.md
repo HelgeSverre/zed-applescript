@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.2]
+
+### Fixed
+
+- **Block comments now highlight.** `(* ... *)` block comments were a separate `block_comment` node, but `highlights.scm` only captured the line-comment `(comment)` node. Result: every block comment in every script rendered with no syntax color. Added `(block_comment) @comment` capture. This bug pre-dates v1.0 and is the first user-reported bug of the session.
+
+### Known limitation
+
+- `just verify` catches dead .scm node references (the inverse direction), but NOT named nodes that exist in the grammar yet have no `.scm` capture (like this bug). Strengthening verify to flag uncaptured named nodes would need a curated allowlist (many nodes legitimately stay uncaptured — control-flow wrappers, etc.). Worth doing if more capture gaps surface.
+
 ## [1.7.1]
 
 ### Added
