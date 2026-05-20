@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.3]
+
+### Fixed
+
+- **`block_comment` text object capture.** `(comment)` was captured for the line-comment form but `(block_comment)` (the `(* ... *)` form) wasn't, so vim's `gc` text object didn't land on block comments. Added `(block_comment) @comment.around` and `@comment.inside`. Adjacent line comments now join into a single text object via `(comment)+` (Zed convention).
+
+### Known limitation — block comment folding
+
+Zed does not currently expose any tree-sitter query for code folding (no `folds.scm` convention; folding is driven only by indentation and LSP folding ranges). A top-of-file `(* ... *)` block comment with column-0 content has no indentation change for Zed's folder to latch onto, so multi-line block comments are not foldable from this extension's side. This is a Zed limitation, not a grammar one — would require an upstream change to add a fold-query convention.
+
 ## [1.7.2]
 
 ### Fixed

@@ -1,9 +1,13 @@
 ; Text objects for AppleScript
 ; Enables vim-style text object selection
 
-; Comments
-(comment) @comment.around
+; Comments — line (`--`, `#`) and block (`(* *)`) forms. `(comment)+`
+; joins adjacent line comments into a single text object so vim `gc`
+; targets a whole comment paragraph.
+(comment)+ @comment.around
 (comment) @comment.inside
+(block_comment) @comment.around
+(block_comment) @comment.inside
 
 ; Functions/handlers - @function.around for entire handler, @function.inside for body
 (handler_definition) @function.around
