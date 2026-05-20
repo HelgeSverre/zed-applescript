@@ -76,7 +76,7 @@ install:
 # Verify queries, then open example/ in a new Zed window
 [macos]
 dev: verify
-    zed --new example
+    zed grammars/applescript/test/corpus
 
 # Print manual install flow (UI-driven, lets Zed compile the extension)
 install-via-ui:
