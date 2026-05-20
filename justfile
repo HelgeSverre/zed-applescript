@@ -85,6 +85,47 @@ install-via-ui:
     @echo "  2. cmd-shift-P → 'zed: install dev extension'"
     @echo "  3. Pick this directory: $(pwd)"
 
+# Compile every corpus .applescript with osacompile to catch corruption
+[macos]
+validate-corpus:
+    #!/usr/bin/env bash
+    set -e
+
+    fail=0
+    info=0
+    pass=0
+    for f in $(find grammars/tree-sitter-applescript/test/corpus/realworld -name '*.applescript'); do
+        out=$(mktemp -t corpus-valid).scpt
+        if err=$(osacompile -o "$out" "$f" 2>&1); then
+            pass=$((pass + 1))
+        elif echo "$err" | grep -qE "found class name|found identifier|found “:”|run handler is specified more than once"; then
+            # Expected categories of soft failure — file is real AppleScript
+            # but can't be compiled in isolation. Common causes:
+            #   - depends on an app dictionary not installed locally
+            #   - hand-crafted fixture isolating a construct (e.g. bare
+            #     ObjC selector calls that are valid only inside tell blocks)
+            #   - intentional implicit-run + explicit-run test
+            printf "INFO  %-70s\n" "$f"
+            echo "$err" | head -1 | sed 's/^/      /'
+            info=$((info + 1))
+        else
+            # Hard fail = encoding break, zero-length, binary content, or
+            # a class of error we don't recognise. Worth investigating.
+            printf "FAIL  %-70s\n" "$f"
+            echo "$err" | head -3 | sed 's/^/      /'
+            fail=$((fail + 1))
+        fi
+        rm -f "$out"
+    done
+
+    echo ""
+    echo "Pass: $pass  •  Info (missing app dict): $info  •  Fail (broken): $fail"
+    if [ "$fail" -gt 0 ]; then
+        echo "✗ One or more corpus files appear to be broken AppleScript."
+        exit 1
+    fi
+    echo "✓ All $((pass + info)) corpus files are real AppleScript."
+
 # Show extension version, grammar pin, last tag, and working-tree status
 [macos]
 status:
