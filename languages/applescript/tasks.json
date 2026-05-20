@@ -6,6 +6,15 @@
     "tags": ["applescript-script"]
   },
   {
+    "label": "Compile to .scpt",
+    "command": "bash",
+    "args": [
+      "-c",
+      "OUT=\"${ZED_FILE%.*}.scpt\"; osacompile -o \"$OUT\" \"$ZED_FILE\" && echo \"Compiled → $OUT\""
+    ],
+    "tags": ["applescript-script"]
+  },
+  {
     "label": "Run handler $ZED_SYMBOL",
     "command": "bash",
     "args": [

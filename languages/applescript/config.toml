@@ -7,6 +7,11 @@ tab_size = 4
 hard_tabs = true
 first_line_pattern = '^#!.*\\bosascript\\b'
 
+# Characters that, when present immediately after the cursor, allow an
+# autoclose pair to be inserted (typing `(` before any of these still
+# autocloses). Mirrors the set most Zed extensions use.
+autoclose_before = ";:.,=}])>"
+
 brackets = [
     { start = "(", end = ")", close = true, newline = true },
     { start = "{", end = "}", close = true, newline = true },

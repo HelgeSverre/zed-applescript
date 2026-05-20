@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0]
+
+### Added
+
+- **`overrides.scm`** — declares syntactic scopes (`@string`, `@comment.inclusive` covering both `(comment)` and `(block_comment)`). Lets Zed suppress autocomplete inside comments, enable spell-check inside strings vs disable elsewhere, and skip bracket-pair insertion inside string literals. This was the only documented language-query file we were missing.
+- **`autoclose_before = ";:.,=}])>"`** in `config.toml` — typing an opening bracket immediately before any of these characters will still autoclose, matching the convention used across Elixir, Kotlin, and other popular Zed extensions.
+- **Compile-to-.scpt task** — gutter task "Compile to .scpt" runs `osacompile -o <file>.scpt <file>` for the script. Pairs with the existing "Run AppleScript" and "Run handler $ZED_SYMBOL" runnables.
+
+### Verified
+
+- **Markdown fence injection works.** Zed's language registry uses case-insensitive lookup against `name` ("AppleScript") and `path_suffixes` (`"applescript"`, `"scpt"`), so ```applescript`, ```AppleScript`, and ```scpt` all trigger our highlights inside markdown documents — no extra configuration needed in this extension. Verified by reading `crates/language/src/language_registry.rs::language_for_name_or_extension` in Zed's source.
+
+### Reviewed against other extensions
+
+Surveyed 10 popular language extensions (F#, Haskell, Elixir, Dart, Elm, Kotlin, Gleam, Lua, Nix, Crystal) — see CHANGELOG for v1.7.3. With this release we now ship 8 of the 9 documented Zed `.scm` files (everything except `redactions.scm`, which is for PII/secret masking and doesn't apply to AppleScript).
+
 ## [1.7.3]
 
 ### Fixed
