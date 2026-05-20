@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.2]
+
+### Added
+
+- **Grammar repo README + LICENSE** at [HelgeSverre/tree-sitter-applescript](https://github.com/HelgeSverre/tree-sitter-applescript). The grammar previously shipped without a README. Also set its GitHub topics (`tree-sitter`, `tree-sitter-grammar`, `tree-sitter-parser`, `parser`, `applescript`, `osascript`, `macos`, `automation`), updated the description, and set the homepage to point at this extension.
+- Grammar pin bumped to include the new README/LICENSE (no parser change).
+
+### Changed
+
+- **CI workflow** now runs `just verify` and `just test` instead of an ad-hoc inline parse, so the .scm-against-node-types check gates every push.
+- **Release workflow** runs `just verify` as a pre-publish gate.
+- Both workflows now use `actions/checkout@v4` with `submodules: recursive` so the grammar is available without an extra clone step, and install `just` via `extractions/setup-just@v2`.
+- LICENSE.md copyright year bumped to 2026.
+
 ## [1.8.1]
 
 ### Added

@@ -117,7 +117,3 @@ For a fresh contributor who'd rather have Zed compile the extension via its own 
 - [`CHANGELOG.md`](CHANGELOG.md) — version history and per-release notes.
 - [`CLAUDE.md`](CLAUDE.md) — guidance for AI coding agents working in this repo (also picked up by Codex via `AGENTS.md` symlink).
 - [`docs/references/`](docs/references/) — cached upstream documentation (Apple's AppleScript Language Guide, tree-sitter authoring docs, Zed extension docs, external-scanner reference).
-
-## License
-
-[MIT](LICENSE.md).
