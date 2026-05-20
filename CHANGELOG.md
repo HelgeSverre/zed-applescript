@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.1]
+
+### Added
+
+- **`example/` directory** with three smoke-test files: `hello.applescript` (minimal), `showcase.applescript` (exercises every construct the extension highlights), and `injection.md` (markdown fence injection check).
+- **`just install`** symlinks this directory into `~/Library/Application Support/Zed/extensions/installed/applescript`. Idempotent. Replaces the prior print-instructions placeholder.
+- **`just dev`** verifies queries and opens the `example/` folder in a new Zed window — the one-command "see my change" entry point.
+- **`just install-via-ui`** retains the old print-instructions flow for fresh contributors who'd rather have Zed compile the extension through its own builder.
+
+### Changed
+
+- README trimmed (219 → 123 lines). Per-release historical notes moved to this CHANGELOG; the support matrix, grammar coverage table, and dev workflow are kept and tightened.
+- `justfile` recipe descriptions cleaned up so `just --list` is readable.
+- Deleted on-disk leftovers (`grammars/applescript/`, `grammars/applescript.wasm`) — both were already gitignored runtime artifacts.
+
 ## [1.8.0]
 
 ### Added

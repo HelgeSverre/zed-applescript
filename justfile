@@ -2,6 +2,8 @@
 default:
     @just --list
 
+# === Grammar / build ===
+
 # Initialize/update the grammar submodule
 init:
     git submodule update --init --recursive
@@ -10,10 +12,19 @@ init:
 build:
     cd grammars/tree-sitter-applescript && npm install && npm run generate
 
-# Verify every node referenced in languages/applescript/*.scm exists in the
-# freshly-generated parser. Catches silent breakage when a grammar bump
-# renames or removes a node — without this gate, queries reference dead
-# nodes and Zed silently drops the rule.
+# Run the grammar's full fixture suite + a quick smoke parse
+test:
+    #!/usr/bin/env bash
+    set -e
+    cd grammars/tree-sitter-applescript
+    echo "Running fixture suite..."
+    npx tree-sitter test 2>&1 | tail -3
+    echo ""
+    echo "Smoke-parse:"
+    echo 'set x to 5' | npx tree-sitter parse /dev/stdin
+    echo "✓ All tests passed"
+
+# Regenerate parser + check every .scm node reference resolves
 verify:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -22,15 +33,9 @@ verify:
     npx tree-sitter generate >/dev/null
     cd ../..
 
-    # Named nodes the parser actually produces.
     KNOWN=$(jq -r '.[] | select(.named == true) | .type' \
         grammars/tree-sitter-applescript/src/node-types.json | sort -u)
 
-    # Node references in .scm files. Strip `;` comments first, then
-    # extract `(name` where name is a node-type identifier (lowercase
-    # underscore words). Field labels like `command:` are filtered out
-    # by requiring the name NOT be followed by `:`. Captures (`@name`)
-    # and predicates (`#name?`) don't match `(name` and are ignored.
     REFS=$(sed 's/;.*$//' languages/applescript/*.scm \
         | grep -oE '\([a-z_][a-z0-9_]*' \
         | sed 's/^(//' \
@@ -49,28 +54,38 @@ verify:
 
     echo "✓ All query node references resolve. ($(echo "$REFS" | wc -l | tr -d ' ') unique nodes referenced)"
 
-# Test the grammar parses correctly
-test:
+# === Dev loop ===
+
+# Symlink this dir into Zed's extensions/installed/ (one-time setup)
+[macos]
+install:
     #!/usr/bin/env bash
     set -e
-    echo "Testing grammar..."
-    cd grammars/tree-sitter-applescript
-    echo 'set x to 5' | npx tree-sitter parse /dev/stdin
+    ZED_EXT="$HOME/Library/Application Support/Zed/extensions/installed"
+    mkdir -p "$ZED_EXT"
+    rm -f "$ZED_EXT/applescript"
+    ln -s "$(pwd)" "$ZED_EXT/applescript"
+    echo "✓ Symlinked $(pwd) → $ZED_EXT/applescript"
     echo ""
-    echo 'on sayHello(name)
-        return "Hello"
-    end sayHello' | npx tree-sitter parse /dev/stdin
-    echo ""
-    echo "✓ All tests passed"
+    echo "Next steps:"
+    echo "  1. In Zed: cmd-shift-P → 'zed: rebuild dev extension' (or quit + relaunch)"
+    echo "  2. Open example/hello.applescript or example/injection.md to test"
 
-# Install dev extension in Zed
-install:
-    @echo "To install dev extension:"
-    @echo "1. Open Zed"
-    @echo "2. Cmd+Shift+P → 'zed: install dev extension'"
-    @echo "3. Select this directory: $(pwd)"
+# Verify queries, then open example/ in a new Zed window
+[macos]
+dev: verify
+    zed --new example
 
-# Update submodule to latest and update extension.toml
+# Print manual install flow (UI-driven, lets Zed compile the extension)
+install-via-ui:
+    @echo "Manual install via Zed UI:"
+    @echo "  1. Open Zed"
+    @echo "  2. cmd-shift-P → 'zed: install dev extension'"
+    @echo "  3. Pick this directory: $(pwd)"
+
+# === Release ===
+
+# Update submodule to latest and rewrite the commit pin in extension.toml
 update-grammar:
     #!/usr/bin/env bash
     set -e
@@ -83,34 +98,24 @@ update-grammar:
     echo "Updated extension.toml to grammar commit $COMMIT"
     git add grammars/tree-sitter-applescript extension.toml
 
-# Bump version and prepare release. Runs `verify` as a pre-tag gate so
-# a silent .scm/grammar drift can't ship.
+# Bump version, fast-forward grammar, verify, commit, tag
 release version:
     #!/usr/bin/env bash
     set -e
 
-    # Update version in extension.toml
     sed -i '' "s/^version = \".*\"/version = \"{{version}}\"/" extension.toml
 
-    # Ensure submodule is up to date
     just update-grammar
-
-    # Verify every .scm node reference resolves against the newly-pinned grammar.
-    # Fails the release if anything is stale.
     just verify
 
-    # Commit
     git add -A
     git commit -m "Release v{{version}}"
-
-    # Tag it
     git tag -a "v{{version}}" -m "Release v{{version}}"
 
     echo ""
-    echo "Release v{{version}} prepared!"
-    echo "Run 'git push && git push --tags' to publish"
+    echo "Release v{{version}} prepared. Run 'just push' to publish."
 
-# Push everything
+# Push main + tags
 push:
     git push origin main
     git push origin --tags

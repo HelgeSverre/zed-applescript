@@ -2,188 +2,74 @@
 
 AppleScript language support for the [Zed](https://zed.dev) editor.
 
+## Install
+
+From inside Zed: `cmd-shift-P` → `zed: extensions` → search for **AppleScript** → Install.
+
 ## Features
 
-- Syntax highlighting for AppleScript
-- Support for `.applescript` and `.scpt` file extensions
-- Line comments (`--`) and block comments (`(* *)`)
-- Auto-indentation for block structures
-- Code outline showing handlers, properties, and tell blocks
-- Bracket matching
-- Vim-style text objects
-- Run scripts directly from the editor via `osascript`
+- Syntax highlighting (line + block comments, strings, numbers, operators, command names, parameters, handlers, control flow, ObjC-bridge calls, raw-data literals, date literals, …)
+- Code outline (handlers, properties, script objects, `tell` targets, `use` imports)
+- Auto-indent for every block form (`tell`, `if`, `repeat`, `try`, `considering`, `ignoring`, `with timeout`, `with transaction`, `using terms from`, `script`)
+- Bracket matching for `()`, `{}`, `(* *)`, `""`
+- Vim text objects — `@function`, `@class`, `@comment` (line and block forms)
+- Run scripts from the editor: full-file run, individual handler, or compile to `.scpt`
+- Language injection — Bash inside `do shell script "…"`; AppleScript or JavaScript-for-Automation inside `run script "…"` based on content sniffing; AppleScript inside markdown fences
+- Shebang detection for `#!/usr/bin/osascript`
 
-## Support matrix
+## Quick reference
 
-### Editor / structural features
+### Editor surface
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Syntax highlighting | ✅ | `languages/applescript/highlights.scm` — comments, strings, numbers, booleans, operators, type specifiers, command names, parameter names, handler/script names, control-flow keywords |
-| Comments — line (`--`, `#`) | ✅ | `config.toml` |
-| Comments — block (`(* *)`) | ✅ | `config.toml` |
-| Auto-indentation | ✅ | Increases inside handlers, `tell`, `if`, `repeat`, `try`, `considering`, `ignoring`, `with timeout`, `using terms from`, `script` blocks; outdents on `end` |
-| Bracket matching | ✅ | `()`, `{}` for parameter lists, parenthesized expressions, lists, records |
-| Code outline | ✅ | Handlers (with parameters), `script` objects, properties, `tell` block targets |
-| Vim text objects | ✅ | `@function` (handlers, `tell`, `if`, `repeat`, `try`, etc.), `@class` (script objects), `@comment` |
-| Run script (whole file) | ✅ | Gutter run button → `osascript $ZED_FILE` |
-| Run individual handler | ⚠️ | Gutter run button per handler — invokes the handler by appending `<handler>()` to a temp copy of the file. **Zero-arg handlers only.** The top-level script body still runs before the appended call. |
-| Auto-closing brackets / quotes | ✅ | `()`, `{}`, `(* *)`, `""` auto-close via `config.toml` brackets array |
-| Shebang detection (`#!/usr/bin/osascript`) | ✅ | `first_line_pattern` in `config.toml` |
-| Language injections | ✅ | Bash highlighting inside `do shell script "…"`; recursive AppleScript inside `run script "…"` |
+| Highlights | ✅ | `languages/applescript/highlights.scm` |
+| Outline | ✅ | Handlers, `script` objects, properties, `tell` targets, `use` imports |
+| Indents | ✅ | Inside every block construct; outdents on `end` |
+| Brackets | ✅ | `()`, `{}`; auto-close also for `(* *)` and `""` |
+| Text objects | ✅ | Vim-style `gc`, `if`, `ic`, etc. |
+| Scope overrides | ✅ | Comments and strings (suppresses autocomplete, etc.) |
+| Runnables | ✅ | Run script, compile to `.scpt`, run individual handler (zero-arg only) |
+| Injections | ✅ | bash / javascript / applescript inside string literals; markdown fence injection works out of the box |
+| Shebang detection | ✅ | `^#!.*\bosascript\b` |
+| Code folding for block comments | ⚠️ | Limited — Zed has no extension-side fold-query convention; see `CHANGELOG.md` v1.7.3 |
 | Snippets | ❌ | None shipped |
+| Language-server features (completion, hover, rename, diagnostics, formatter, debugger) | ❌ | No maintained AppleScript LSP exists |
 
 ### Grammar coverage
 
-Provided by the [tree-sitter-applescript](https://github.com/HelgeSverre/tree-sitter-applescript) grammar pinned in `extension.toml`.
+Provided by [tree-sitter-applescript](https://github.com/HelgeSverre/tree-sitter-applescript), pinned by commit in `extension.toml`.
 
 | Construct | Status |
 | --- | --- |
-| Handlers — `on` / `to`, positional params, labeled (`given …:`) params | ✅ |
-| Tell blocks — block form (`tell … end tell`) and one-line form | ✅ |
-| Conditionals — `if`/`then`/`else if`/`else` block and one-line `if … then …` | ✅ |
+| Handlers — `on` / `to`, positional + labeled (`given …:`) params | ✅ |
+| Tell — block form and one-line `tell X to …` | ✅ |
+| Conditionals — `if`/`then`/`else if`/`else` and one-line `if … then …` | ✅ |
 | Loops — all `repeat` forms | ✅ |
 | Error handling — `try` / `on error` with error parameter clauses | ✅ |
-| Scoping blocks — `considering`, `ignoring`, `with timeout`, `using terms from` | ✅ |
+| Scoping — `considering`, `ignoring`, `with timeout`, `with transaction`, `using terms from` | ✅ |
 | Declarations — `property`, `global`, `local`, `set`, `copy` | ✅ |
-| Script objects — `script` … `end script` with `parent` clause | ✅ |
-| `use` statements — application / framework / scripting additions / version | ✅ |
-| Commands — `command_name`, named parameters, `given` clause | ✅ |
-| Object specifiers — `element_type`, `specifier_prefix`, references, indexing, ranges | ✅ |
-| Object specifier filter — `whose` / `where` clauses | ✅ |
-| Literals — string + escape sequences, number, boolean, list, record, `missing value`, `null`, date literal | ✅ |
-| Special references — `me`, `it`, `result`, `current application` | ✅ |
-| Possessive `'s` — `current application's NSString`, chained `x's y's z` | ✅ |
-| `a reference to <expr>` — common ASObjC idiom | ✅ |
-| ObjC bridge — `receiver's selector:arg [label:arg …]` method-call syntax | ✅ |
-| `make new <element_type> …` argument form | ✅ |
-| Line continuation `¬` — consumed as whitespace, parses join transparently | ✅ |
-| Coercion — `value as type` | ✅ |
-| Operators — comparison (`begins/ends/starts with`, `contains`, `is in`, …), logical, arithmetic, unary, range, concatenation | ✅ |
-| Text attributes — `case`, `diacriticals`, etc. (inside `considering` / `ignoring`) | ✅ |
-| `log`, `return`, `error`, `exit`, `continue` statements | ✅ |
-| Decorative `the` (`set the x to the name of the file`) | ✅ |
-| `current date` / `current application` builtins | ✅ |
-| Implicit `on run` script (top-level `end run` matches) | ✅ |
-| `my <handler>(…)` self-reference and handler calls | ✅ |
-| Multi-word application-dictionary identifiers (`current view`, `name extension`, `text item delimiters`, `application file`, `static text`, …) | ✅ Handled via `compound_name` (1–3 word names) and a small built-in vocabulary of multi-word `element_type`s. Tree-sitter has no `.sdef` access, so an unknown 4+ word app constant may still split into separate identifiers in highlighting. |
-| ObjC-style handler definitions (`on selector:arg [label:arg …] … end selector:label:`) | ✅ |
-| Folder Action handler shapes (`on adding folder items to fld after receiving items`, `on opening folder`, etc.) | ✅ |
-| AppleScript raw-data literals (`«class fold»`, `«data utxt201C»`) | ✅ |
+| Script objects — `script … end script` with `parent` clause | ✅ |
+| `use` — application / framework / scripting additions, with aliases / `version` / `with importing` | ✅ |
+| Commands — `command_name`, named parameters, `with`/`without` flags, `given` clause | ✅ |
+| Object specifiers — `element_type`, references, indexing, ranges, `whose`/`where` | ✅ |
+| Literals — string, number (incl. ordinal `1st`/`2nd`), boolean, list, record, date, `missing value`, raw data `«class fold»` | ✅ |
+| Special refs — `me`, `it`, `its`, `result`, `current application`, `my <expr>` | ✅ |
+| Possessive `'s` and ObjC bridge — `receiver's selector:arg [label:arg …]` | ✅ |
+| Pipe-delimited identifiers — `|name with spaces|` | ✅ |
+| Line continuation `¬` | ✅ |
+| Coercion (`as type`), operators (full synonym table), text attributes | ✅ |
+| Multi-word app-dictionary names — `current view`, `name extension`, `text item delimiters`, etc. | ⚠️ Curated vocabulary + 6-word compound names; truly novel 7+-word app constants may split |
+| ObjC-style handler defs (`on selector:arg byLabel:arg`) | ✅ |
+| Folder-action handler shapes (`on adding folder items to …`) | ✅ |
 
-### Code intelligence (LSP-backed)
+### Real-world corpus
 
-There is no maintained AppleScript language server, so none of these features are available and there are no concrete plans to add them. Listed for completeness.
+The grammar is exercised against [36 real AppleScript files](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld) drawn from Apple's `/Library/Scripts/`, decompiled folder-action and printing scripts, plus hand-crafted ASObjC and edge-case samples.
 
-| Feature | Status |
-| --- | --- |
-| Completion / IntelliSense | ❌ |
-| Hover documentation | ❌ |
-| Go to definition / find references | ❌ |
-| Rename symbol | ❌ |
-| Diagnostics / linting | ❌ |
-| Code actions / quick fixes | ❌ |
-| Formatter | ❌ (no AppleScript formatter exists) |
-| Debugger (DAP) | ❌ |
+**Current state: 36/36 active corpus files parse with zero `ERROR` and zero `MISSING` nodes.** Total reduction from baseline: 732 → 0. The `known-limits/` quarantine directory is empty.
 
-### File handling
-
-| Feature | Status | Notes |
-| --- | --- | --- |
-| `.applescript` files | ✅ | |
-| `.scpt` files | ✅ | Listed as a suffix; note these are usually compiled binaries and won't render as readable text |
-| `.scptd` script bundles | ❌ | `.scptd` is a package directory, not a file — Zed opens these as folders, not editable scripts |
-
-### Real-world coverage
-
-The grammar is exercised against a corpus of real AppleScript files under [`grammars/tree-sitter-applescript/test/corpus/realworld/`](https://github.com/HelgeSverre/tree-sitter-applescript/tree/main/test/corpus/realworld) — 36 scripts drawn from Apple's `/Library/Scripts/`, decompiled `.scpt` Folder Actions and Printing Scripts, plus hand-crafted ASObjC and edge-case samples. A categorized gap analysis lives in [`ERRORS.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/ERRORS.md) for anyone extending the grammar.
-
-**Current state:** **36 of 36 active corpus files parse with zero `ERROR` and zero `MISSING` nodes.** Total reduction from baseline: **732 → 0 ERRORs across the active corpus**. `known-limits/` is empty — every file originally quarantined this session is now in the active corpus.
-
-### External scanner
-
-[`src/scanner.c`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/src/scanner.c) is a hand-written C scanner that implements two context-sensitive tokens tree-sitter's pure-grammar lexer can't represent:
-
-- **`block_comment`** — `(* ... *)` that respects strings and nests. The regex-based comment closed at the first `*)` even when it was inside a `"..."` string; the scanner tracks quote state and depth.
-- **`alias_prefix`** — emits `alias` only when the next non-whitespace input isn't `of`. This separates `alias <expr>` (a value-creating prefix, used by `copy alias "X" to y`) from `alias of theItem` (still a plain property reference).
-
-### Files unblocked this session
-
-All four files originally quarantined this session were progressively unblocked:
-
-- `colorsync_extract.applescript` — column-aware `keyword_handler_to` scanner token (v1.4.0).
-- `comment_tags.applescript` — multi-word tokens bounded to a single physical line (v1.5.0).
-- `attach_folder_action.applescript` — `inline_marker` external token for nested `if … then return … / end if` (v1.6.0).
-- `remove_folder_actions.applescript` — widened `if_simple_statement` tail + `keyword_script` accepted in `index_expression` (v1.7.0).
-
-The architectural lessons are catalogued in [`docs/references/external-scanner/02-lessons-learned.md`](docs/references/external-scanner/02-lessons-learned.md).
-
-## Known limitations
-
-After a complete audit against Apple's [AppleScript Language Guide](https://developer.apple.com/library/archive/documentation/AppleScript/Conceptual/AppleScriptLangGuide/introduction/ASLR_intro.html), the following constructs are documented language features the grammar does **not** yet model.
-
-### Tractable (purely additive, no scanner work needed)
-
-- **`idle` handler return-interval semantics** (`on idle … return N … end idle`) — parses as a regular handler; the contract that the return value is the next-wake interval isn't surfaced structurally.
-- **`continuing <command>` flow** — `continue <command_call>` parses as a `continue_statement` but the command body that follows isn't bound into it.
-- **Deprecated keywords** `returning` (alt for `to` in handler defs) and `put` / `put into` (alt for `copy`). Skipped because they're rare and would risk grammar churn for no real-world benefit.
-
-### Needs an external C scanner (substantial)
-
-- **Pipe-delimited identifiers** (`|My Identifier|`) — resolved in v1.3.0; listed here for historical reference only.
-- **Multi-line `compound_name` cascade** — `command_parameter`'s `compound_name` value greedily spans newlines into the next statement. Documented above under "Real-world coverage".
-
-### Intentionally not modeled
-
-- **AppleScript Studio** (deprecated since 2011, removed from Xcode) — `on clicked theObject`, `tell window "Main"`, `call method ... of class ...`. Some legacy scripts still use it; we don't.
-- **Smart curly quotes inside source** (`"…"` vs `"…"`) — `osadecompile` always emits straight quotes; documented as accept-on-demand.
-- **`.scptd` script bundles** — these are macOS packages, not files; Zed opens them as folders.
-- **Multi-word application-dictionary constants we haven't whitelisted** — e.g. `Eight channel`, `RGB`, `CMYK` inside `using terms from`. These parse as separate identifiers (visually correct enough for highlighting); the only way to make tree-sitter resolve them to single constants is to embed every app's `.sdef` dictionary into the grammar, which isn't practical.
-
-## Roadmap
-
-**Status: maintenance mode as of v1.7.0.** All editor surfaces are wired, the active 36-file real-world corpus parses with 0 ERROR + 0 MISSING, and `known-limits/` is empty. AppleScript itself is in long-term decline (Apple archived the Language Guide; AS Studio was deprecated in 2011), so new investment here is demand-driven, not roadmap-driven.
-
-### Done
-
-- **Quick wins**: `with transaction`, `numeric strings` / `expansion` attributes, `but considering` / `but ignoring`, AppleScript constants (`pi`, `space`, `tab`, `linefeed`, `quote`), weekday/month constants, time-unit constants.
-- **Operator polish**: full comparison synonym table; short forms `prop`, `ref`.
-- **Idiomatic AppleScript**: `its` reference, ordinal-suffix numbers (`1st`, `2nd`, `23rd`).
-- **Reference forms**: `before`, `after`, `behind`, `in front of`, `in back of`.
-- **`use` statement extensions**: aliased binding, `version` clause, `with importing` / `without importing`, `use script "X"`.
-- **External scanner** (`src/scanner.c`): quote-aware block comments; context-sensitive `alias` keyword.
-- **v1.2 additions**: `idle` handler (corpus-locked); `continue <command>` delegation; JXA detection in `run script "…"` injections (switches injected language between `applescript` and `javascript` based on JS-shaped tokens in the string body).
-- **v1.3.0 addition**: pipe-delimited identifiers (`|name with spaces|`) — external scanner token, accepted everywhere an identifier slot exists.
-- **v1.4.0 addition**: context-sensitive `to` — column-aware external token; `move X to Y` and `from N to M` no longer mis-parse as handler headers. Unblocked `colorsync_extract.applescript` (now in the active corpus).
-- **v1.5.0 addition**: multi-word grammar tokens (`default answer`, `with multiple selections allowed`, etc.) are now bounded to a single physical line — eliminates an entire class of cross-line gluing bugs. Unblocked `comment_tags.applescript` (now in the active corpus); `known-limits/` is down to 2 files.
-- **v1.6.0 addition**: `inline_marker` external token for `if_simple_statement` — disambiguates nested `if … then return … / end if / end if` and lets the tail accept any same-line `_item`. Unblocked `attach_folder_action.applescript`.
-- **v1.7.0 addition**: widened `if_simple_statement` tail to set/copy/command_call/tell_simple_statement; `index_expression` accepts `keyword_script` as an alternative to `element_type`. Unblocked `remove_folder_actions.applescript` — **`known-limits/` is now empty**.
-
-### Out of scope
-
-- **Language-server features** (completion, hover, go-to-def, diagnostics, rename, formatting) — no maintained AppleScript LSP exists.
-- **Debugger (DAP)** — no AppleScript debugger exists outside Script Editor / Script Debugger.
-- **AppleScript Studio** — deprecated by Apple in 2011, removed from Xcode; no realistic user base.
-- **`.scptd` script bundles** — macOS packages, not files; Zed opens them as folders.
-- **JavaScript for Automation (JXA) as its own language** — would need a separate grammar.
-
-[`docs/references/`](docs/references/) caches all the authoritative source material (Apple Language Guide, tree-sitter authoring docs, Zed extension docs, external-scanner reference, [`docs/references/external-scanner/01-scanner-c.md`](docs/references/external-scanner/01-scanner-c.md) for the C-side TSLexer interface) so any future contributor can extend the grammar without round-tripping through the web.
-
-## Installation
-
-1. Open Zed
-2. Open the command palette (`Cmd+Shift+P`)
-3. Search for "zed: extensions"
-4. Search for "AppleScript" and click Install
-
-## Supported Syntax
-
-- **Handlers**: `on`/`to` ... `end`
-- **Tell blocks**: `tell application` ... `end tell`
-- **Control flow**: `if`/`then`/`else`, `repeat`, `try`/`on error`
-- **Blocks**: `considering`, `ignoring`, `with timeout`, `with transaction`, `using terms from`
-- **Declarations**: `property`, `set`, `local`, `global`
-- **Use statements**: `use application`, `use framework`, `use scripting additions`
+A categorized history of which parser changes unblocked which files lives in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Example
 
@@ -193,27 +79,45 @@ use scripting additions
 
 property greeting : "Hello"
 
-on sayHello(name)
-    tell application "System Events"
-        display dialog greeting & ", " & name & "!"
-    end tell
-end sayHello
+on greet(name)
+    return greeting & ", " & name & "!"
+end greet
 
-sayHello("World")
+on main()
+    tell application "System Events"
+        display dialog greet("World")
+    end tell
+end main
+
+main()
 ```
 
-## Development
+More samples in [`example/`](example/) — including a markdown injection smoke-test ([`example/injection.md`](example/injection.md)) and a construct showcase ([`example/showcase.applescript`](example/showcase.applescript)).
 
-To test locally:
+## Dev workflow
 
-1. Clone this repository
-2. Open Zed
-3. Run "zed: install dev extension" from the command palette
-4. Select the cloned directory
+The extension is declarative — no Rust or WASM — so the dev loop is fast.
 
-> [!TIP]
-> In the Finder dialog, press `Cmd+Shift+G` to open "Go to Folder" and paste a path directly.
+```bash
+just init       # one-time: pull the grammar submodule
+just install    # symlink this dir into Zed's extensions/installed/
+just dev        # verify queries, then open Zed in the example/ folder
+just verify     # check every .scm node reference resolves against the grammar
+just test       # run the grammar's 94-fixture test suite
+just release X.Y.Z   # bump version, fast-forward grammar, verify, commit, tag
+just push       # push main + tags
+```
+
+After `just install`, every change to a `.scm` file is picked up by Zed on the next file reload (or via `cmd-shift-P → zed: rebuild dev extension`). Grammar changes need a `just update-grammar` to advance the pin in `extension.toml`.
+
+For a fresh contributor who'd rather have Zed compile the extension via its own builder (instead of the symlink trick), use `just install-via-ui` for instructions.
+
+## Documentation
+
+- [`CHANGELOG.md`](CHANGELOG.md) — version history and per-release notes.
+- [`CLAUDE.md`](CLAUDE.md) — guidance for AI coding agents working in this repo (also picked up by Codex via `AGENTS.md` symlink).
+- [`docs/references/`](docs/references/) — cached upstream documentation (Apple's AppleScript Language Guide, tree-sitter authoring docs, Zed extension docs, external-scanner reference).
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE.md) file for details.
+[MIT](LICENSE.md).
