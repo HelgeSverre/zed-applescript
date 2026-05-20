@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.5]
+
+Corpus expansion — 9 community-sourced scripts.
+
+### Added
+
+- **Active corpus → 40 files** (was 36). Four community scripts that already parse cleanly:
+  - `community/dmg_finder.applescript` from `indygreg/PyOxidizer` — Finder DMG window-styling pattern.
+  - `community/NV-CopyToNV.applescript`, `community/NV-LinkAutomation.applescript`, `community/NV-NewNoteFromDialog.applescript` from `unforswearing/applescript` — Notational Velocity automation snippets.
+- **Stress targets in `known-limits/community-stress/`** — 5 substantial files (1,155 LOC total, 69 ERROR nodes) that exercise gaps not yet covered:
+  - `omnifocus_library.applescript` (579 LOC, 29 err) — multi-word record keys, deep ASObjC patterns.
+  - `battery_monitor.applescript` (228, 12) — long mixed-pattern app.
+  - `layouts.applescript` (148, 7) — chained tells, window management.
+  - `adium_unittest.applescript` (106, 11) — Adium app-dictionary specifics.
+  - `alfred_iterm.applescript` (94, 10) — `tell X to tell Y to tell Z to <action>` chains.
+
+  Each is documented in [`known-limits/README.md`](https://github.com/HelgeSverre/tree-sitter-applescript/blob/main/test/corpus/realworld/known-limits/README.md) with its primary failure mode, so future grammar work can pick the highest-leverage target.
+
+### Changed
+
+- Grammar pin bumped to `b523b13`. No parser change — corpus addition only.
+
 ## [1.8.4]
 
 Polish pass — four small additions, no behavior changes for end users.
