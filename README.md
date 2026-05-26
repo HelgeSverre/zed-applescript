@@ -2,7 +2,7 @@
 
 [![CI](https://img.shields.io/github/actions/workflow/status/HelgeSverre/zed-applescript/ci.yml?branch=main&logo=github&label=CI)](https://github.com/HelgeSverre/zed-applescript/actions/workflows/ci.yml)
 [![Latest version](https://img.shields.io/github/v/tag/HelgeSverre/zed-applescript?label=version)](https://github.com/HelgeSverre/zed-applescript/releases/latest)
-[![License](https://img.shields.io/github/license/HelgeSverre/zed-applescript)](LICENSE.md)
+[![License](https://img.shields.io/github/license/HelgeSverre/zed-applescript)](LICENSE)
 
 AppleScript language support for the [Zed](https://zed.dev) editor.
 
