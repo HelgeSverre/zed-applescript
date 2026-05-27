@@ -1,6 +1,6 @@
 id = "applescript"
 name = "AppleScript"
-version = "1.9.0"
+version = "1.9.1"
 schema_version = 1
 authors = ["Helge Sverre <helge.sverre@gmail.com>"]
 description = "AppleScript language support for Zed"

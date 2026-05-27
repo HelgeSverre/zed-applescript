@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.1]
+
+Packaging-only release for Zed extension marketplace publishing. No grammar, query, or behavior changes.
+
+### Changed
+
+- Renamed `LICENSE.md` → `LICENSE` to satisfy the Zed marketplace license-file requirement (Oct 2025).
+- README license badge link updated to point at the new filename.
+
 ## [1.9.0]
 
 Tier 1 grammar improvements — 5 small lenient parsing additions sourced from a three-agent stress-file analysis. **22 errors closed** across the quarantined stress targets.
